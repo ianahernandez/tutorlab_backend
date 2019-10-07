@@ -10,7 +10,36 @@ const app = express();
 
 //Obtener todos los usuarios
 app.get('/users', function (req, res) {
-  res.json('get users');
+
+  let from = req.query.from || 0;
+  from = Number(from);
+
+  let limit = req.query.limit || 5;
+  limit = Number(limit);
+
+
+  User.find({}, 'name email img') //Mostrar solo los campos indicados en el segundo parametro
+//  User.find({},)
+        .skip(from)
+        .limit(limit)
+        .exec( (err, users) => {
+
+          if(err){
+            return res.status(400).json({
+              ok: false,
+              err
+            });
+          }
+
+          User.count({}, (err, count) =>{
+            res.json({
+              ok: true,
+              users,
+              count
+            });
+          })
+
+        })
 });
 
 //Obtener usuario
