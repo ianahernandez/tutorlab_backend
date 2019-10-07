@@ -1,11 +1,15 @@
 require('./config/config');
 
 const express = require('express');
+const mongoose = require('mongoose');
+
 const app = express();
 const bodyParser = require('body-parser');
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
+
+app.use( require('./routes/user') );
  
 // parse application/json
 app.use(bodyParser.json());
@@ -14,33 +18,15 @@ app.get('/', function (req, res) {
   res.json('Hello World')
 });
 
-app.get('/usuario', function (req, res) {
-  res.json('get usuarios');
-});
+mongoose.connect('mongodb://172.17.0.2:27017/tutorlab', (err, res) => {
 
-app.post('/usuario', function (req, res) {
+  if(err) throw err;
 
-  let body = req.body;
-  res.json({
-    body
-  });
+  console.log("Base de datos online");
 
-});
+}); 
 
-app.put('/usuario/:id', function (req, res) {
 
-  let id = req.params.id;
-
-  res.json({
-    id    
-  });
-});
-
-app.delete('/usuario', function (req, res) {
-  res.json('delete usuarios');
-});
-
- 
 app.listen(process.env.PORT, () => {
   console.log('Escuchando el puerto: ', process.env.PORT);
 })
