@@ -1,15 +1,25 @@
 require('./config/config');
 
+require('./config/passport');
+
 const express = require('express');
+
 const mongoose = require('mongoose');
 
+const passport = require('passport');
+
 const app = express();
+
 const bodyParser = require('body-parser');
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.use( require('./routes/user') );
+// passport initialize
+app.use(passport.initialize());
+
+//Configuracion de rutas
+app.use( require('./routes/index') );
  
 // parse application/json
 app.use(bodyParser.json());
