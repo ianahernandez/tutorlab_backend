@@ -50,4 +50,4 @@ process.env.SEED = process.env.SEED || 'secret-dev'
 //     Google client id
 //================================
 
-process.env.CLIENT_ID = process.env.CLIENT_ID || '57107022367-045ci6mlhlr3taj59ha0u50okk5de2b6.apps.googleusercontent.com';
+process.env.CLIENT_ID = process.env.CLIENT_ID || '1058838072967-d3lqfaogeksqj34vctq24rth4clmuh5d.apps.googleusercontent.com';
