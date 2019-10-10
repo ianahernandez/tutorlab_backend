@@ -8,7 +8,7 @@ const User = require('../models/user');
 
 const app = express();
 
-//Obtener todos los usuarios
+//Obtener todos los usuarios activos
 app.get('/users', function (req, res) {
 
   let from = req.query.from || 0;
@@ -18,7 +18,7 @@ app.get('/users', function (req, res) {
   limit = Number(limit);
 
 
-  User.find({}, 'name email img') //Mostrar solo los campos indicados en el segundo parametro
+  User.find({ status: true }, 'name email img') //Mostrar solo los campos indicados en el segundo parametro
 //  User.find({},)
         .skip(from)
         .limit(limit)
@@ -31,7 +31,7 @@ app.get('/users', function (req, res) {
             });
           }
 
-          User.count({}, (err, count) =>{
+          User.count({ status: true }, (err, count) =>{
             res.json({
               ok: true,
               users,
@@ -104,8 +104,39 @@ app.put('/user/:id', function (req, res) {
 
 });
 
-app.delete('/user', function (req, res) {
-  res.json('delete user');
+//Borra registro lógicamente
+app.delete('/user/:id', function (req, res) {
+
+  let id = req. params.id;
+
+  let cambiarEstado = {
+    status: false
+  }
+
+  User.findByIdAndUpdate( id, cambiarEstado, {new: true, context: 'query'}, (err, userDB) => {
+    if(err){
+      return res.status(400).json({
+        ok: false,
+        err
+      });
+    }
+
+    if( !userDB ){
+      return res.status(400).json({
+        ok: false,
+        err: {
+          message: "Usuario no encontrado"
+        }
+      });
+    }
+
+    res.json({
+      ok: true,
+      user: userDB
+    });
+
+  });
+
 });
 
 module.exports = app;
