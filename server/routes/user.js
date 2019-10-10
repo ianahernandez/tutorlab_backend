@@ -6,10 +6,12 @@ const _ = require('underscore');
 
 const User = require('../models/user');
 
+const { verificarToken, verificarAdminRole } = require('../middlewares/authorization');
+
 const app = express();
 
 //Obtener todos los usuarios activos
-app.get('/users', function (req, res) {
+app.get('/users', verificarToken, function (req, res) {
 
   let from = req.query.from || 0;
   from = Number(from);
@@ -18,8 +20,7 @@ app.get('/users', function (req, res) {
   limit = Number(limit);
 
 
-  User.find({ status: true }, 'name email img') //Mostrar solo los campos indicados en el segundo parametro
-//  User.find({},)
+  User.find({ status: true }) //Mostrar solo los campos indicados en el segundo parametro
         .skip(from)
         .limit(limit)
         .exec( (err, users) => {
@@ -80,7 +81,7 @@ app.post('/user', function (req, res) {
 });
 
 //Actualizar info usuario
-app.put('/user/:id', function (req, res) {
+app.put('/user/:id', verificarToken, function (req, res) {
 
   let id = req.params.id;
 
@@ -105,7 +106,7 @@ app.put('/user/:id', function (req, res) {
 });
 
 //Borra registro lógicamente
-app.delete('/user/:id', function (req, res) {
+app.delete('/user/:id', [verificarToken, verificarAdminRole],function (req, res) {
 
   let id = req. params.id;
 
