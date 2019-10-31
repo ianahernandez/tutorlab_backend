@@ -19,6 +19,10 @@ let categorySchema = new Schema({
     type: String,
     required: false
   },
+  status: {
+    type: Boolean,
+    default: true
+  },
 
 });
 
