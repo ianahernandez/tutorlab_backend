@@ -15,6 +15,7 @@
     "express": "^4.17.1",
     "google-auth-library": "^5.4.0",
     "jsonwebtoken": "^8.5.1",
+    "mailgun-js": "^0.22.0",
     "mongoose": "^5.7.4",
     "mongoose-extend-schema": "^1.0.0",
     "mongoose-unique-validator": "^2.0.3",

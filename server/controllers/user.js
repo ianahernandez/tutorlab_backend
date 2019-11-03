@@ -7,11 +7,15 @@ const bcrypt = require('bcrypt');
 
 const _ = require('underscore');
 
+const jwt = require('jsonwebtoken');
+
 const User = require('../models/user');
 
 const instructorController = require('./instructor');
 
 const studentController = require('./student');
+
+const mailController = require('./mail');
 
 // =====================
 // Guardar Usuario
@@ -47,7 +51,7 @@ let saveUser = (req, res) => {
     else if(user.role == 'INSTRUCTOR_ROLE'){
       data = instructorController.saveInstructor(userDB, res);
     }
-
+    
     res.json({
       ok: true,
       user: userDB,
@@ -57,9 +61,9 @@ let saveUser = (req, res) => {
   });
 }
 
-// =====================
+// ==========================
 // Obtener todos los usuarios
-// =====================
+// ==========================
 
 let getUsers = (req, res) => {
 
@@ -122,6 +126,118 @@ let updateUser = (req, res) => {
 }
 
 // =====================
+// Recuperar contraseña
+// =====================
+
+// Envío de instrucciones por correo
+let forgotPassword = (req, res) => {
+
+  let email = req.body.email;
+
+  User.findOne({email: email}, (err, userDB) => {
+
+    if (err) {
+        return res.status(500).json({
+            ok: false,
+            err
+        })
+    }
+
+    if (!userDB) {
+        return res.status(400).json({
+            ok: false,
+            err: {
+                message: 'Correo no registrado.'
+            }
+        })
+    }
+
+    let token = jwt.sign({
+        user: userDB._id,
+        reset: true,
+    }, process.env.SEED, { expiresIn: process.env.CADUCIDAD_TOKEN });
+
+    let text = `Use el siguiente enlace para recuperar la contraseña -> localhost:3000/api/reset/${token}`
+
+    console.log(token);
+
+    //mailController.sendMail(userDB.email, "Recuperar contraseña", text)
+
+    res.json({
+        ok: true,
+        user: userDB,
+        token
+    })
+
+  })
+
+}
+
+// Verificacion de URL: token de cambio de contraseña
+let authReset = (req, res) => {
+
+    let user = User.findById(req.user, (err, userDB) => {
+      if (err) {
+        return res.status(500).json({
+            ok: false,
+            err
+        });
+      }
+      
+      if(!userDB){
+        return res.status(401).json({
+          ok: false,
+          err: {
+              message: 'Url inválida'
+          }
+      });
+
+      }
+      return res.json({
+        ok: true,
+        user: userDB,
+      })
+
+    })
+    
+}
+
+// Cambiar contraseña
+let passwordReset = (req, res) => {
+
+    if( req.body.password != req.body.passwordconfirm){
+      return res.status(401).json({
+          ok: false,
+          err: {
+              message: 'Las contraseñas no coinciden'
+          }
+      });
+    }
+
+    let body = req.body;
+
+    let user = req.user; 
+
+    let changePassword = {
+      password: bcrypt.hashSync(body.password, 10)
+    }
+
+    User.findByIdAndUpdate(user._id, changePassword, {new: true, context: 'query'}, (err, userDB) => {
+      if(err){
+        return res.status(400).json({
+          ok: false,
+          err
+        });
+      }
+  
+      res.json({
+        ok: true,
+        user: userDB
+      });
+    });
+}
+
+// =====================
 // Eliminar un usuario
 // =====================
 
@@ -163,5 +279,8 @@ module.exports = {
   saveUser, 
   getUsers, 
   updateUser,
-  deleteUser
+  deleteUser,
+  forgotPassword,
+  authReset,
+  passwordReset
 }

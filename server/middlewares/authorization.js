@@ -1,3 +1,8 @@
+// ======================================================
+//      Middleware: Autorización para acceso de servicios
+//      By TutorLab Team ©
+// ======================================================
+
 const jwt = require('jsonwebtoken');
 
 //================================
@@ -60,8 +65,45 @@ let verifyAdminRole = (req, res, next) => {
     next();
 }
 
+//=====================================================
+//  Verificacion de URL: token de cambio de contraseña
+//=====================================================
+let verifyTokenResetPassword = (req, res, next) => {
+
+    let token = req.body.token;
+
+    jwt.verify(token, process.env.SEED, (err, decoded) => {
+
+        if (err) {
+            return res.status(401).json({
+                ok: false,
+                err: {
+                    message: 'URL inválida'
+                }
+            });
+        }
+
+        req.user = decoded.user;
+        req.reset = decoded.reset;
+
+        console.log(req.user);
+
+        if (! req.reset ) {
+            return res.status(401).json({
+                ok: false,
+                err: {
+                    message: 'Url inválida'
+                }
+            });
+        }
+        next();
+    })
+  
+}
+
 module.exports = {
     verifyToken,
     verifyAdminRole,
-    verifyUserLogged
+    verifyUserLogged,
+    verifyTokenResetPassword
 }
