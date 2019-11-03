@@ -1,3 +1,8 @@
+// ====================================================
+//      Rutas API: Categorías
+//      By TutorLab Team ©
+// ====================================================
+
 const express = require('express');
 
 const _ = require('underscore');
@@ -6,12 +11,12 @@ const { verificarToken } = require('../middlewares/authorization.js');
 
 const Category = require('../models/category');
 
-const app = express();
+const api = express.Router();
 
 // =====================
 // Todas las categorias
 // =====================
-app.get('/category', (req, res) => {
+api.get('/category', (req, res) => {
 
   let from = req.query.from || 0;
   from = Number(from);
@@ -46,14 +51,14 @@ app.get('/category', (req, res) => {
 // =====================
 // Una categoria por id
 // =====================
-app.get('/category/:id', (req, res) => {
+api.get('/category/:id', (req, res) => {
   
 });
 
 // =====================
 // Crear nueva categoria
 // =====================
-app.post('/category', (req, res) =>{
+api.post('/category', (req, res) =>{
 
   let body = req.body;
 
@@ -83,7 +88,7 @@ app.post('/category', (req, res) =>{
 // =====================
 // Editar categoria
 // =====================
-app.put('/category/:id', (req, res) =>{
+api.put('/category/:id', (req, res) =>{
   let id = req.params.id;
 
   let body = _.pick( req.body, ['name', 'description', 'img']);
@@ -108,9 +113,9 @@ app.put('/category/:id', (req, res) =>{
 // =====================
 // Eliminar categoria
 // =====================
-app.delete('/category/:id', (req, res) =>{
+api.delete('/category/:id', (req, res) =>{
 
 });
 
 
-module.exports = app;
+module.exports = api;

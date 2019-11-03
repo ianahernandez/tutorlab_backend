@@ -1,3 +1,8 @@
+// ====================================================
+//      Rutas API: Login
+//      By TutorLab Team ©
+// ====================================================
+
 const express = require('express');
 
 const bcrypt = require('bcrypt');
@@ -10,13 +15,13 @@ const client = new OAuth2Client(process.env.CLIENT_ID);
 
 const User = require('../models/user');
 
-const app = express();
+const api = express.Router();
 
-app.post('/login', (req, res) => {
+api.post('/login', (req, res) => {
 
     let body = req.body;
 
-    User.findOne({ email: body.email }, (err, userDB) => {
+    User.findOne({  $or:[{ email: body.email }, { username: body.email }]}, (err, userDB) => {
         if (err) {
             return res.status(500).json({
                 ok: false,
@@ -76,14 +81,14 @@ async function verify(token) {
     }
 }
 
-app.post('/google-signin', async(req, res) => {
+api.post('/google-signin', async(req, res) => {
 
 
     let token = req.body.idtoken;
 
     let googleUser = await verify(token)
         .catch(err => {
-            res.status(403).json({
+            return res.status(403).json({
                 ok: false,
                 err
             })
@@ -152,4 +157,4 @@ app.post('/google-signin', async(req, res) => {
 
 
 
-module.exports = app;
+module.exports = api;

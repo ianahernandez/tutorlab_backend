@@ -1,3 +1,7 @@
+// ====================================================
+//      Modelo de Usuarios (Datos de registro)
+//      By TutorLab Team ©
+// ====================================================
 
 const mongoose = require('mongoose');
 const uniqueValidator = require('mongoose-unique-validator');
@@ -14,6 +18,11 @@ let userSchema = new Schema({
   name: {
     type: String,
     required: [true, 'El nombre es requerido']
+  },
+  username: {
+    type: String,
+    unique: true,
+    required: [true, 'El username es requerido']
   },
   email: {
     type: String,

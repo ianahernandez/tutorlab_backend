@@ -1,3 +1,8 @@
+// =============================================
+//      Modelo de Categorías de cursos
+//      By TutorLab Team ©
+// ==============================================
+
 
 const mongoose = require('mongoose');
 

@@ -1,3 +1,8 @@
+// ====================================================
+//      Servidor: main js
+//      By TutorLab Team ©
+// ====================================================
+
 require('./config/config');
 
 const express = require('express');
@@ -23,7 +28,6 @@ app.use(bodyParser.json());
 //Habilitar carpeta publica
 app.use(express.static(path.resolve(__dirname, '../public')));
  
-
 
 mongoose.connect(process.env.URLDB, 
         { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true },
