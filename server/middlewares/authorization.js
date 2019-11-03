@@ -1,10 +1,10 @@
 const jwt = require('jsonwebtoken');
 
 //================================
-//    Verificacion del Token
+//    Verificacion del Token válido
 //================================
 
-let verificarToken = (req, res, next) => {
+let verifyToken = (req, res, next) => {
 
     let token = req.get('token');
     jwt.verify(token, process.env.SEED, (err, decoded) => {
@@ -22,11 +22,32 @@ let verificarToken = (req, res, next) => {
     })
 };
 
+//==================================
+//    Verificacion usuario loggeado
+//==================================
+
+let verifyUserLogged = (req, res, next) => {
+
+    let id = req.params.id;
+
+    let user = req.user;
+
+    if (user._id != id) {
+        return res.status(401).json({
+            ok: false,
+            err: {
+                message: 'El usuario no tiene permisos.'
+            }
+        });
+    }
+    next();
+}
+
 //================================
 //    Verificacion de adminRole
 //================================
 
-let verificarAdminRole = (req, res, next) => {
+let verifyAdminRole = (req, res, next) => {
     let user = req.user;
     if (user.role != 'ADMIN_ROLE') {
         return res.json({
@@ -40,6 +61,7 @@ let verificarAdminRole = (req, res, next) => {
 }
 
 module.exports = {
-    verificarToken,
-    verificarAdminRole
+    verifyToken,
+    verifyAdminRole,
+    verifyUserLogged
 }
