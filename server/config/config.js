@@ -55,3 +55,9 @@ process.env.SEED = process.env.SEED || 'secret-dev'
 //================================
 
 process.env.CLIENT_ID = process.env.CLIENT_ID || '1058838072967-d3lqfaogeksqj34vctq24rth4clmuh5d.apps.googleusercontent.com';
+
+//================================
+//     Cors client
+//================================
+
+process.env.CLIENT_CORS_URL = process.env.CLIENT_CORS_URL || 'http://localhost:8080';

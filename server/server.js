@@ -13,10 +13,19 @@ const app = express();
 
 const bodyParser = require('body-parser');
 
+const cors = require('cors');
+
 const path = require('path');
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
+
+app.use(cors({origin: process.env.CLIENT_CORS_URL}));
+
+app.options('*', cors({origin: process.env.CLIENT_CORS_URL}));
+
+app.use(bodyParser.json());
+
 
 //Configuracion de rutas
 app.use( require('./routes/index') );

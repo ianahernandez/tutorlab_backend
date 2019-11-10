@@ -7,6 +7,7 @@ const express = require('express');
 
 const app = express();
 
+app.use( '/api', require('./uploads') );
 
 app.use( '/api', require('./user') );
 
