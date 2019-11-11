@@ -101,13 +101,13 @@ let getUsers = (req, res) => {
 // Actualizar un usuario
 // =====================
 
-let updateUser = (req, res) => {
+let updateUser =  (req, res) => {
 
   let id = req.params.id;
 
-  let body = _.pick( req.body, ['name', 'username', 'email', 'img', 'role', 'status']);
+  let body = _.pick( req.body, ['name', 'username', 'email', 'status']);
 
-  User.findByIdAndUpdate( id, body, {new: true, runValidators: true,  context: 'query'}, (err, userDB) => {
+  User.findByIdAndUpdate( id, body, {new: true, runValidators: true,  context: 'query'}, async (err, userDB) => {
 
     if(err){
       return res.status(400).json({
@@ -116,9 +116,18 @@ let updateUser = (req, res) => {
       });
     }
 
+    if(userDB.role == 'STUDENT_ROLE'){
+      data = await studentController.updateProfile(userDB.id, req, res);
+    }
+
+    else if(userDB.role == 'INSTRUCTOR_ROLE'){
+      data = await instructorController.updateProfile(userDB.id, req, res);
+    }
+
     res.json({
       ok: true,
-      user: userDB
+      user: userDB,
+      data
     });
 
   });

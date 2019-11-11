@@ -15,13 +15,17 @@ const client = new OAuth2Client(process.env.CLIENT_ID);
 
 const User = require('../models/user');
 
+const instructorController = require('../controllers/instructor');
+
+const studentController = require('../controllers/student');
+
 const api = express.Router();
 
 api.post('/login', (req, res) => {
 
     let body = req.body;
 
-    User.findOne({  $or:[{ email: body.email }, { username: body.email }]}, (err, userDB) => {
+    User.findOne({  $or:[{ email: body.email }, { username: body.email }]}, async (err, userDB) => {
         if (err) {
             return res.status(500).json({
                 ok: false,
@@ -51,10 +55,21 @@ api.post('/login', (req, res) => {
             user: userDB
         }, process.env.SEED, { expiresIn: process.env.CADUCIDAD_TOKEN });
 
+        let data;
+
+        if(userDB.role == 'STUDENT_ROLE'){
+            data = await studentController.getStudentByUserId(userDB.id, req, res);
+        }
+    
+        else if(userDB.role == 'INSTRUCTOR_ROLE'){
+            data = await instructorController.getInstructorByUserId(userDB.id, req, res);
+        }
+
 
         res.json({
             ok: true,
             user: userDB,
+            data,
             token
         })
     }) 

@@ -21,4 +21,12 @@ let instructorSchema = extendSchema(PublicUser, {
   },  
 });
 
+instructorSchema.methods.toJSON = function () {
+
+  let aux = this;
+  let instructorObject = aux.toObject();
+  delete instructorObject.user;
+  return instructorObject;
+}
+
 module.exports = mongoose.model('Instructor', instructorSchema);

@@ -11,7 +11,6 @@ let publicUserSchema = new Schema({
   name: {
     type: String,
     required: [true, 'El nombre es requerido'],
-    default: "Andres"
   },
   lastname: {
     type: String,
@@ -21,10 +20,36 @@ let publicUserSchema = new Schema({
     type: String,
     required: false
   },
+  city: {
+    type: String,
+    required: false
+  },
+  emailPublic: {
+    type: String,
+    required: false
+  },
+  title: {
+    type: String,
+    required: false
+  },
+  description: {
+    type: String,
+    required: false
+  },
+  interests: {
+    type: [String],
+    required: false
+  },
   user: {
     type: Schema.Types.ObjectId,
     ref: 'User',
     required: true
+  },
+  social: {
+    facebook: {type: String, required: false},
+    twitter: {type: String, required: false},
+    linkedin: {type: String, required: false},
+    github: {type: String, required: false},
   }
   
 });
