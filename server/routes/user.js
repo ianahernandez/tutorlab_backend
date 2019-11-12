@@ -11,6 +11,7 @@ const { verifyToken, verifyAdminRole, verifyUserLogged, verifyTokenResetPassword
 
 const api = express.Router();
 
+
 //Obtener todos los usuarios activos
 api.get('/users', verifyToken, userController.getUsers);
 
@@ -26,6 +27,7 @@ api.post('/user', userController.saveUser);
 
 //Actualizar info usuario
 api.put('/user/:id', [verifyToken, verifyUserLogged], userController.updateUser);
+
 
 //============    Recuperar contraseña
 // Envío de instrucciones por correo

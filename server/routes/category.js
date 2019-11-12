@@ -5,7 +5,7 @@
 
 const express = require('express'); 
 
-const { verifyToken } = require('../middlewares/authorization.js');
+const { verifyToken, verifyAdminRole } = require('../middlewares/authorization.js');
 
 const categoryController = require('../controllers/category');
 
@@ -24,17 +24,17 @@ api.get('/category/:id', categoryController.getCategoryById);
 // =====================
 // Crear nueva categoria
 // =====================
-api.post('/category', categoryController.saveCategory);
+api.post('/category', [verifyToken, verifyAdminRole],categoryController.saveCategory);
 
 // =====================
 // Editar categoria
 // =====================
-api.put('/category/:id', categoryController.updateCategory);
+api.put('/category/:id', [verifyToken, verifyAdminRole], categoryController.updateCategory);
 
 // =====================
 // Eliminar categoria
 // =====================
-api.delete('/category/:id', categoryController.deleteCategory);
+api.delete('/category/:id', [verifyToken, verifyAdminRole], categoryController.deleteCategory);
 
 
 module.exports = api;

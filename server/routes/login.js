@@ -65,14 +65,13 @@ api.post('/login', (req, res) => {
             data = await instructorController.getInstructorByUserId(userDB.id, req, res);
         }
 
-
         res.json({
             ok: true,
             user: userDB,
             data,
             token
-        })
-    }) 
+        });
+    });
 
 });
 

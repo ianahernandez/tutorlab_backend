@@ -9,6 +9,8 @@ const validExtention = ['jpg','jpeg','png','mp4','pdf'];
 
 const User = require('../models/user');
 
+const Category = require('../models/category');
+
 const fs = require('fs');
 
 const path = require('path');
@@ -76,6 +78,9 @@ let uploadByType = (type,id,res,filename) =>{
     case 'users':
       userImage(id, res, filename);
       break;
+    case 'categories':
+      categoryImage(id, res, filename);
+      break;
   
     default:
       break;
@@ -111,7 +116,41 @@ let userImage = (id, res, filename) => {
       res.json({
         ok: true,
         usuario: userDB,
-        img: filename
+      });
+    });
+
+  });
+}
+
+let categoryImage = (id, res, filename) => {
+  Category.findById(id, (err, categoryDB) => {
+    if(err){
+      deleteFile('categories', filename);
+      return res.status(500).json({
+        ok: false,
+        err
+      });
+    }
+
+    if( ! categoryDB ){
+      deleteFile('categories', filename)
+      return res.status(400).json({
+        ok: false,
+        err: "La categoría no existe"
+      });
+    }
+
+    deleteFile('categories', categoryDB.img);
+    
+    categoryDB.img = filename;
+
+    categoryDB.save((err, categorybd) => {
+      if(err){
+        return console.log(err)
+      }
+      res.json({
+        ok: true,
+        category: categoryDB,
       });
     });
 

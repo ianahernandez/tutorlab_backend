@@ -48,7 +48,30 @@ let getCategories = (req, res) => {
 // =====================
 
 let getCategoryById = (req, res) => {
-  
+
+  let id = req. params.id;
+
+  Category.findById(id, (err, categoryDB) => {
+    if(err){
+      return res.status(500).json({
+        ok: false,
+        err
+      });
+    }
+
+    if( ! categoryDB ){
+      return res.status(400).json({
+        ok: false,
+        err: "La categoría no existe"
+      });
+    }
+
+    res.json({
+      ok: true,
+      category: categoryDB,
+    });
+
+  });
 }
 
 // =====================
@@ -114,6 +137,35 @@ let updateCategory = (req, res) =>{
 
 let deleteCategory = (req, res) =>{
 
+  let id = req. params.id;
+
+  let cambiarEstado = {
+    status: false
+  }
+
+  Category.findByIdAndUpdate( id, cambiarEstado, {new: true, context: 'query'}, (err, categoryDB) => {
+    if(err){
+      return res.status(400).json({
+        ok: false,
+        err
+      });
+    }
+
+    if( !categoryDB ){
+      return res.status(400).json({
+        ok: false,
+        err: {
+          message: "Categoría no encontrada"
+        }
+      });
+    }
+
+    res.json({
+      ok: true,
+      category: categoryDB
+    });
+
+  });
 }
 
 module.exports = {
