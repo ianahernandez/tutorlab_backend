@@ -3,13 +3,15 @@
 //      By TutorLab Team ©
 // ====================================================
 
-const validType = ['users', 'categories'];
+const validType = ['users', 'categories', 'lessons'];
 
 const validExtention = ['jpg','jpeg','png','mp4','pdf'];
 
 const User = require('../models/user');
 
 const Category = require('../models/category');
+
+const {Course, Section, Lesson, ExternalResource} = require('../models/course'); 
 
 const fs = require('fs');
 
@@ -81,6 +83,9 @@ let uploadByType = (type,id,res,filename) =>{
     case 'categories':
       categoryImage(id, res, filename);
       break;
+      case 'lessons':
+        lessonVideo(id, res, filename);
+        break;
   
     default:
       break;
@@ -155,6 +160,50 @@ let categoryImage = (id, res, filename) => {
     });
 
   });
+}
+
+let lessonVideo = (id, res, filename) => {
+
+  Lesson.findById(id, (err, lessonDB) => {
+
+    if(err){
+      deleteFile('lessons', filename);
+      return res.status(500).json({
+        ok: false,
+        err
+      });
+    }
+
+    if( ! lessonDB ){
+      deleteFile('lessons', filename)
+      return res.status(400).json({
+        ok: false,
+        err: "La lección no existe"
+      });
+    }
+
+    deleteFile('lessons', lessonDB.video);
+    
+    lessonDB.video = filename;
+   
+    lessonDB.save( (err, lessonbd) => {
+
+      if(err){
+        return res.status(400).json({
+          ok: false,
+          err
+        });
+      }
+
+      res.json({
+        ok: true,
+        lesson: lessonbd
+      });
+
+    });
+
+  });
+
 }
 
 let deleteFile = (type, filename) => {

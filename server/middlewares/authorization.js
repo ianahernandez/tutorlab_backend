@@ -101,9 +101,47 @@ let verifyTokenResetPassword = (req, res, next) => {
   
 }
 
+//=====================================================
+//  Verificacion de Formato de video mp4, avi
+//=====================================================
+
+let verifyVideoFormat = (req, res, next) => {
+    let auxfile = req.params.src.split('.');
+
+    if ( auxfile[auxfile.length -1].indexOf('mp4','avi') < 0 ) {
+        return res.status(401).json({
+            ok: false,
+            err: {
+                message: 'Url inválida'
+            }
+        });
+    }
+    next();
+}
+//=====================================================
+//  Verificacion de Formato de imagen jpg, jpeg, png
+//=====================================================
+
+let verifyImgFormat = (req, res, next) => {
+
+    let auxfile = req.params.img.split('.');
+
+    if ( auxfile[auxfile.length -1].indexOf('jpg','jpeg','png') < 0 ) {
+        return res.status(401).json({
+            ok: false,
+            err: {
+                message: 'Url inválida'
+            }
+        });
+    }
+    next();
+}
+
 module.exports = {
     verifyToken,
     verifyAdminRole,
     verifyUserLogged,
-    verifyTokenResetPassword
+    verifyTokenResetPassword,
+    verifyVideoFormat,
+    verifyImgFormat
 }

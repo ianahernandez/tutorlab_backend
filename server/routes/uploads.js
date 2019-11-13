@@ -33,4 +33,13 @@ api.put('/upload/categories/:id', [verifyToken, verifyAdminRole], (req, res)=>{
   uploadController.uploadFile(req, res);
 });
 
+// =================================
+// Subir video de leccion (clase)
+// =================================
+
+api.put('/upload/lessons/:id', (req, res)=>{
+  req.params.type = 'lessons';
+  uploadController.uploadFile(req, res);
+});
+
 module.exports = api;
