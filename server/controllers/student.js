@@ -89,7 +89,7 @@ let  updateProfile = async (id, req, res) => {
   let student= {};
 
   let body = _.pick( req.body,
-            ['name', 'lastname', 'gender', 'dateBorn', 'city', 'emailPublic', 'title', 'description', 'interests', 'social.facebook','social.linkedin', 'social.github', 'social.twitter' ]);
+            ['name', 'lastname', 'gender', 'dateBorn', 'city', 'emailPublic', 'title', 'description', 'interests', 'social' ]);
 
   await Student.findOneAndUpdate({ 'user': id}, body, {new: true, runValidators: true,  context: 'query'}, (err, studentDB) => {
 

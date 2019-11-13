@@ -105,7 +105,7 @@ let updateUser =  (req, res) => {
 
   let id = req.params.id;
 
-  let body = _.pick( req.body, ['name', 'username', 'email', 'status']);
+  let body = _.pick( req.body, ['name','lastname', 'username', 'email', 'status']);
 
   let bodyuser = body;
 

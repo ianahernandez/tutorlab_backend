@@ -25,7 +25,11 @@ api.post('/login', (req, res) => {
 
     let body = req.body;
 
-    User.findOne({  $or:[{ email: body.email }, { username: body.email }]}, async (err, userDB) => {
+    let emailOrUser = body.email;
+
+    let regex = new RegExp(emailOrUser, 'i');
+
+    User.findOne({  $or:[{ email: regex }, { username: regex }]}, async (err, userDB) => {
         if (err) {
             return res.status(500).json({
                 ok: false,
