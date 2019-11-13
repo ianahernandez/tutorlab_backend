@@ -14,7 +14,20 @@ const Student = require('../models/student');
 let saveStudent = (user, res) => {
 
   let student = new Student({
-    name: user.name,
+    name: user.name.split(' ')[0],
+    lastname: user.name.split(' ')[user.name.split(' ').length -1],
+    gender:'',
+    dateBorn: '',
+    city: '',
+    emailPublic: '',
+    title: '',
+    description: '',
+    social: {
+      facebook:'',
+      twitter: '',
+      linkedin: '',
+      github: '',
+    },
     user: user._id
   });
 
@@ -69,7 +82,7 @@ let  updateProfile = async (id, req, res) => {
   let student= {};
 
   let body = _.pick( req.body,
-            ['name', 'lastname', 'gender', 'city', 'emailPublic', 'title', 'description', 'interests'.split(','), 'social.facebook','social.linkedin', 'social.github', 'social.twitter' ]);
+            ['name', 'lastname', 'gender', 'dateBorn', 'city', 'emailPublic', 'title', 'description', 'interests'.split(','), 'social.facebook','social.linkedin', 'social.github', 'social.twitter' ]);
 
   body.interests = req.body.interests.split(',');
 

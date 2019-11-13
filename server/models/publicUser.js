@@ -20,6 +20,10 @@ let publicUserSchema = new Schema({
     type: String,
     required: false
   },
+  dateBorn: {
+    type: Date,
+    required: false,
+  },
   city: {
     type: String,
     required: false

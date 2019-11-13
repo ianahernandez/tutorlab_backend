@@ -14,9 +14,22 @@ const Instructor = require('../models/instructor');
 let saveInstructor = (user, res) => {
 
   let instructor = new Instructor({
-    name: user.name,
+    name: user.name.split(' ')[0],
+    lastname: user.name.split(' ')[user.name.split(' ').length -1],
+    gender:'',
+    dateBorn: '',
+    city: '',
+    emailPublic: '',
+    title: '',
+    description: '',
+    social: {
+      facebook:'',
+      twitter: '',
+      linkedin: '',
+      github: '',
+    },
     ranking: 0,
-    user: user._id
+    user: user._id 
   });
 
   instructor.save( (err, instructorDB) => {
@@ -70,7 +83,7 @@ let  updateProfile = async (id, req, res) => {
   let instructor= {};
 
   let body = _.pick( req.body,
-            ['name', 'lastname', 'gender', 'city', 'emailPublic', 'title', 'description', 'interests'.split(','), 'social.facebook','social.linkedin', 'social.github', 'social.twitter' ]);
+            ['name', 'lastname', 'gender', 'dateBorn', 'city', 'emailPublic', 'title', 'description', 'interests'.split(','), 'social.facebook','social.linkedin', 'social.github', 'social.twitter' ]);
 
   body.interests = req.body.interests.split(',');
 

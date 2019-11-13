@@ -32,7 +32,7 @@ api.post('/section/:course_id', courseController.saveSection);
 api.post('/lesson/:section_id', courseController.saveLesson);
 
 // =====================
-// Agregar leccion (clase)
+// Agregar recurso externo
 // =====================
 api.post('/resource/:lesson_id', courseController.saveExternalResource);
 

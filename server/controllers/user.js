@@ -108,6 +108,8 @@ let updateUser =  (req, res) => {
 
   let body = _.pick( req.body, ['name', 'username', 'email', 'status']);
 
+  body.name = `${body.name} ${req.body.lastname}`
+
   User.findByIdAndUpdate( id, body, {new: true, runValidators: true,  context: 'query'}, async (err, userDB) => {
 
     if(err){
