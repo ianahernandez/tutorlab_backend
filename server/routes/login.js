@@ -108,7 +108,7 @@ api.post('/google-signin', async(req, res) => {
             })
         })
 
-    User.findOne({ email: googleUser.email }, (err, userDB) => {
+    User.findOne({ email: googleUser.email }, async (err, userDB) => {
 
         if (err) {
             return res.status(500).json({
@@ -131,9 +131,12 @@ api.post('/google-signin', async(req, res) => {
                     user: userDB
                 }, process.env.SEED, { expiresIn: process.env.CADUCIDAD_TOKEN });
 
+                let data = await studentController.getStudentByUserId(userDB.id, req, res);
+
                 res.json({
                     ok: true,
                     user: userDB,
+                    data,
                     token
                 })
             }
@@ -158,10 +161,13 @@ api.post('/google-signin', async(req, res) => {
                     user: userDB
                 }, process.env.SEED, { expiresIn: process.env.CADUCIDAD_TOKEN });
 
+                let data = await studentController.getStudentByUserId(userDB.id, req, res);
+
                 res.json({
                     ok: true,
                     user: userDB,
-                    token
+                    token,
+                    data
                 })
             });
         }
