@@ -24,6 +24,16 @@ api.post('/course', courseController.saveCourse);
 // =====================
 // Agregar seccion
 // =====================
-api.post('/section/:id', courseController.saveSection);
+api.post('/section/:course_id', courseController.saveSection);
+
+// =====================
+// Agregar leccion (clase)
+// =====================
+api.post('/lesson/:section_id', courseController.saveLesson);
+
+// =====================
+// Agregar leccion (clase)
+// =====================
+api.post('/resource/:lesson_id', courseController.saveExternalResource);
 
 module.exports = api;

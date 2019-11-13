@@ -25,7 +25,7 @@ let lessonSchema = new Schema({
   },
   video: {
     type: String,
-    required: true,
+    required: false,
   },
   external_resources: {
     type: [resourceSchema],
@@ -111,8 +111,12 @@ let courseSchema = new Schema({
 
 const Course = mongoose.model('Course', courseSchema);
 const Section = mongoose.model('Section', sectionSchema);
+const Lesson = mongoose.model('Lesson', lessonSchema);
+const ExternalResource = mongoose.model('ExternalResource', resourceSchema);
 
 module.exports = {
   Course,
-  Section
+  Section,
+  Lesson,
+  ExternalResource
 }
