@@ -49,12 +49,12 @@ let publicUserSchema = new Schema({
     ref: 'User',
     required: true
   },
-  social: {
+  social: [{
     facebook: {type: String, required: false},
     twitter: {type: String, required: false},
     linkedin: {type: String, required: false},
     github: {type: String, required: false},
-  }
+  }]
   
 });
 

@@ -66,6 +66,23 @@ let verifyAdminRole = (req, res, next) => {
 }
 
 //=====================================================
+//  Verificacion de tipo usuario: NO GOOGLE Sign in
+//=====================================================
+
+let verifyUserNotGoogle = (req, res, next) => {
+    let user = req.user;
+    if (user.google) {
+        return res.status(403).json({
+            ok: false,
+            err: {
+                message: 'Operación no permitida'
+            }
+        });
+    }
+    next();
+  }
+
+//=====================================================
 //  Verificacion de URL: token de cambio de contraseña
 //=====================================================
 let verifyTokenResetPassword = (req, res, next) => {
@@ -86,7 +103,6 @@ let verifyTokenResetPassword = (req, res, next) => {
         req.user = decoded.user;
         req.reset = decoded.reset;
 
-        console.log(req.user);
 
         if (! req.reset ) {
             return res.status(401).json({
@@ -141,6 +157,7 @@ module.exports = {
     verifyToken,
     verifyAdminRole,
     verifyUserLogged,
+    verifyUserNotGoogle,
     verifyTokenResetPassword,
     verifyVideoFormat,
     verifyImgFormat

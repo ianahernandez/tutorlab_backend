@@ -13,9 +13,16 @@ const Instructor = require('../models/instructor');
 
 let saveInstructor = (user, res) => {
 
+  let nameTokens = user.name.split(' ');
+  let name = nameTokens[0];
+  let lastname = "";
+  if(nameTokens.length > 1){ 
+    lastname = nameTokens.slice().splice(1, nameTokens.length-1).join(' ');
+  }
+
   let instructor = new Instructor({
-    name: user.name.split(' ')[0],
-    lastname: user.name.split(' ')[user.name.split(' ').length -1],
+    name: name,
+    lastname: lastname,
     gender:'',
     dateBorn: '',
     city: '',
@@ -83,9 +90,7 @@ let  updateProfile = async (id, req, res) => {
   let instructor= {};
 
   let body = _.pick( req.body,
-            ['name', 'lastname', 'gender', 'dateBorn', 'city', 'emailPublic', 'title', 'description', 'interests'.split(','), 'social.facebook','social.linkedin', 'social.github', 'social.twitter' ]);
-
-  body.interests = req.body.interests.split(',');
+            ['name', 'lastname', 'gender', 'dateBorn', 'city', 'emailPublic', 'title', 'description', 'interests', 'social.facebook','social.linkedin', 'social.github', 'social.twitter' ]);
 
 
   await Instructor.findOneAndUpdate({ 'user': id}, body, {new: true, runValidators: true,  context: 'query'}, (err, instructortDB) => {

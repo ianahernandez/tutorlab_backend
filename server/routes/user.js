@@ -7,26 +7,40 @@ const express = require('express');
 
 const userController = require('../controllers/user');
 
-const { verifyToken, verifyAdminRole, verifyUserLogged, verifyTokenResetPassword } = require('../middlewares/authorization');
+const { verifyToken, verifyAdminRole, verifyUserLogged, verifyTokenResetPassword, verifyUserNotGoogle } = require('../middlewares/authorization');
 
 const api = express.Router();
 
-
+// ==================================
 //Obtener todos los usuarios activos
+// ==================================
 api.get('/users', verifyToken, userController.getUsers);
 
-//Obtener usuario
+
+// ==================================
+//Obtener usuario por id
+// ==================================
 api.get('/user', function (req, res) {
 
   res.json('get user');
 
 });
 
+// ==================================
 //Registrar usuario
+// ==================================
 api.post('/user', userController.saveUser);
 
+
+// ==================================
 //Actualizar info usuario
+// ==================================
 api.put('/user/:id', [verifyToken, verifyUserLogged], userController.updateUser);
+
+// ==================================
+//  Cambiar contraseña
+// ==================================
+api.put('/user/change-password/:id', [verifyToken, verifyUserLogged, verifyUserNotGoogle], userController.changePassword);
 
 
 //============    Recuperar contraseña
@@ -41,7 +55,9 @@ api.post('/user/reset', verifyToken, userController.passwordReset);
 
 // ============
 
+// ==================================
 //Borra registro lógicamente
+// ==================================
 api.delete('/user/:id', [verifyToken, verifyAdminRole], userController.deleteUser);
 
 

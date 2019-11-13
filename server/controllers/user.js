@@ -32,7 +32,6 @@ let saveUser = (req, res) => {
     email: body.email,
     username: body.username,
     password: bcrypt.hashSync(body.password, 10),
-    // img: body.img,
     role: body.role
   });
 
@@ -108,9 +107,11 @@ let updateUser =  (req, res) => {
 
   let body = _.pick( req.body, ['name', 'username', 'email', 'status']);
 
-  body.name = `${body.name} ${req.body.lastname}`
+  let bodyuser = body;
 
-  User.findByIdAndUpdate( id, body, {new: true, runValidators: true,  context: 'query'}, async (err, userDB) => {
+  bodyuser.name = `${body.name} ${req.body.lastname}`
+
+  User.findByIdAndUpdate( id, bodyuser, {new: true, runValidators: true,  context: 'query'}, async (err, userDB) => {
 
     if(err){
       return res.status(400).json({
@@ -131,6 +132,58 @@ let updateUser =  (req, res) => {
       ok: true,
       user: userDB,
       data
+    });
+
+  });
+
+}
+
+// =====================
+// Cambiar contraseña
+// =====================
+
+let changePassword = (req, res) =>{
+
+  let body = req.body;
+
+  User.findById(req.params.id,(err, userDB) => {
+    if (err) {
+        return res.status(500).json({
+            ok: false,
+            err
+        })
+    }
+    if (!bcrypt.compareSync(body.old_password, userDB.password)) {
+      return res.status(400).json({
+          ok: false,
+          err: {
+              message: 'Contraseña incorrecta'
+          }
+      })
+    }
+
+    if(body.password != body.password_confirm){
+      return res.status(400).json({
+        ok: false,
+        err: {
+            message: 'Los datos no coinciden'
+        }
+     });
+    }
+
+    userDB.password = bcrypt.hashSync(body.password, 10);
+
+    userDB.save( (err, userbd) => {
+      if(err){
+        return res.status(400).json({
+          ok: false,
+          err
+        });
+      }
+
+      res.json({
+        ok: true,
+      });
     });
 
   });
@@ -292,7 +345,9 @@ module.exports = {
   getUsers, 
   updateUser,
   deleteUser,
+  changePassword,
   forgotPassword,
   authReset,
   passwordReset
 }
+
