@@ -150,7 +150,7 @@ api.post('/google-signin', async(req, res) => {
                 password: bcrypt.hashSync('password', 10)
             });
 
-            user.save((err, userDB) => {
+            user.save( async (err, userDB) => {
                 if (err) {
                     return res.status(500).json({
                         ok: false,
@@ -161,7 +161,9 @@ api.post('/google-signin', async(req, res) => {
                     user: userDB
                 }, process.env.SEED, { expiresIn: process.env.CADUCIDAD_TOKEN });
 
-                let data = await studentController.getStudentByUserId(userDB.id, req, res);
+                
+                let data = await studentController.saveStudent(userDB, res);
+                
 
                 res.json({
                     ok: true,
