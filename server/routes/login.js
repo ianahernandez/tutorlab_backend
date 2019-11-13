@@ -141,6 +141,7 @@ api.post('/google-signin', async(req, res) => {
             let user = new User({
                 name: googleUser.name,
                 email: googleUser.email,
+                username: googleUser.email,
                 img: googleUser.img,
                 google: true,
                 password: bcrypt.hashSync('password', 10)
