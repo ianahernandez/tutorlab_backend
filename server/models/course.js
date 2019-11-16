@@ -56,6 +56,7 @@ let courseSchema = new Schema({
   subtitle:{
     type: String,
     required: false,
+    default:''
   },
   category: {
     type: Schema.Types.ObjectId,
@@ -64,11 +65,13 @@ let courseSchema = new Schema({
   },
   subcategory: {
     type: String,
-    required: false
+    required: false,
+    default:''
   },
   description: {
     type: String,
-    required: false
+    required: false,
+    default:''
   },
   price: {
     type: mongoose.Decimal128,
@@ -77,7 +80,7 @@ let courseSchema = new Schema({
   },
   img: {
     type: String,
-    required: false
+    required: false,
   },
   video: {
     type: String,
@@ -100,13 +103,23 @@ let courseSchema = new Schema({
     default: false
   },
   messages: {
-    type: Map,
-    of: String
+    welcome: {
+      type: String,
+      default:''
+    },
+    finished: {
+      type: String,
+      default:''
+    },
   },
   sections: {
     type: [sectionSchema],
     required:false,
-  }
+  },
+  instructor: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+  },
 });
 
 const Course = mongoose.model('Course', courseSchema);

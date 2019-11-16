@@ -9,6 +9,27 @@ const jwt = require('jsonwebtoken');
 //    Verificacion del Token válido
 //================================
 
+let verifyUser = (req, res, next) => {
+
+    let token = req.get('token');
+
+    if(token != undefined){
+
+        jwt.verify(token, process.env.SEED, (err, decoded) => {
+            if (!err) {
+                req.user = decoded.user;
+            }  
+        })
+
+    }
+    next();
+    
+};
+
+//================================
+//    Verificacion del Token válido
+//================================
+
 let verifyToken = (req, res, next) => {
 
     let token = req.get('token');
@@ -38,7 +59,7 @@ let verifyUserLogged = (req, res, next) => {
     let user = req.user;
 
     if (user._id != id) {
-        return res.status(401).json({
+        return res.status(403).json({
             ok: false,
             err: {
                 message: 'El usuario no tiene permisos.'
@@ -55,10 +76,27 @@ let verifyUserLogged = (req, res, next) => {
 let verifyAdminRole = (req, res, next) => {
     let user = req.user;
     if (user.role != 'ADMIN_ROLE') {
-        return res.json({
+        return res.status(403).json({
             ok: false,
             err: {
                 message: 'El usuario no es administrador'
+            }
+        });
+    }
+    next();
+}
+
+//================================
+//    Verificacion de instructor role
+//================================
+
+let verifyInstructorRole = (req, res, next) => {
+    let user = req.user;
+    if (user.role != 'INSTRUCTOR_ROLE') {
+        return res.status(403).json({
+            ok: false,
+            err: {
+                message: 'El usuario no es instructor'
             }
         });
     }
@@ -122,7 +160,7 @@ let verifyTokenResetPassword = (req, res, next) => {
 //=====================================================
 
 let verifyVideoFormat = (req, res, next) => {
-    let auxfile = req.params.src.split('.');
+    let auxfile = req.params.src.split('.');saveExternalResource
 
     if ( auxfile[auxfile.length -1].indexOf('mp4','avi') < 0 ) {
         return res.status(401).json({
@@ -155,7 +193,9 @@ let verifyImgFormat = (req, res, next) => {
 
 module.exports = {
     verifyToken,
+    verifyUser,
     verifyAdminRole,
+    verifyInstructorRole,
     verifyUserLogged,
     verifyUserNotGoogle,
     verifyTokenResetPassword,

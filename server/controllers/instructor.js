@@ -7,6 +7,8 @@ const _ = require('underscore');
 
 const Instructor = require('../models/instructor');
 
+const {Course} = require('../models/course'); 
+
 // =====================
 // Guardar Instructor
 // =====================
@@ -84,7 +86,6 @@ let getInstructorByUserId = async (user_id) => {
 // Actualizar Perfil
 // =====================
 
-
 let  updateProfile = async (id, req, res) => {
 
   let instructor= {};
@@ -110,8 +111,30 @@ let  updateProfile = async (id, req, res) => {
   });
 }
 
+// =======================================
+// Obtener todos los cursos de un instructor
+// =======================================
+
+let getInstructorCourses = (req, res) => {
+
+  if(req.user.role == "INSTRUCTOR_ROLE"){
+      Course.find({instructor: req.user._id}, (err, coursesDB) => {
+        if(err){
+          res.status(500).json({
+            err
+          })
+        }
+        res.json({
+          ok: true,
+          courses: coursesDB
+        })
+      });
+  }
+}
+
 module.exports = { 
   saveInstructor,
   updateProfile,
   getInstructorByUserId,
+  getInstructorCourses
 }

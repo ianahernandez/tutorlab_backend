@@ -6,15 +6,37 @@ const _ = require('underscore');
 
 const {Course, Section, Lesson, ExternalResource} = require('../models/course'); 
 
+// =================================
+// Obtener todos los cursos activos
+// =================================
+
+let getCourses = (req, res) => {
+
+  // Aqui se mostrara la lista de cursos ACTIVOS
+
+    Course.find({status:true}, (err, coursesDB) => {
+      if(err){
+          res.status(500).json({
+            err
+          })
+        }
+        res.json({
+          ok: true,
+          courses: coursesDB
+        })
+    });
+}
+
 // =====================
-// Obtener por Id
+// Obtener curso por Id
 // =====================
 
 let getCourseById = (req, res) =>{
   let id = req.params.id;
   Course.findById(id)
   .populate('category','name img')
-  .exec((err, courseDB) => {
+  .populate('instructor', 'name img username')
+  .exec( async(err, courseDB) => {
       if (err) {
           return res.status(500).json({
               ok: false,
@@ -27,9 +49,21 @@ let getCourseById = (req, res) =>{
               err
           });
       }
+
+      let ids = [];
+      courseDB.sections.forEach(element => ids.push(element._id));
+      await Section.find({
+        _id: { $in: ids }}, (err, sections) => {
+
+          if(!err){
+            courseDB.sections = sections;
+          }       
+
+        });
+
       res.status(201).json({
           ok: true,
-          courseDB
+          course: courseDB
       });
   });
 }
@@ -45,9 +79,10 @@ let saveCourse = (req, res) =>{
   let course = new Course({
     title: body.title,
     category: body.category_id,
-    to_learn: body.to_learn.split(','),
-    requirements: body.requirements.split(','),
-    target_group: body.target_group.split(','),
+    to_learn: body.to_learn,
+    requirements: body.requirements,
+    target_group: body.target_group,
+    instructor: req.user._id
   });
 
   course.save( (err, courseDB) => {
@@ -67,148 +102,9 @@ let saveCourse = (req, res) =>{
   });
 }
 
-let saveSection = (req,res) =>{
-
-  let id = req.params.course_id;
-
-  Course.findById(id, (err, courseDB) => {
-
-    let body = req.body;
-
-    let section = new Section({
-      title: body.title,
-      description: body.description,
-    });
-   
-    section.save( (err, sectionDB) => {
-
-      if(err){
-        return res.status(400).json({
-          ok: false,
-          err
-        });
-      }
-
-      courseDB.sections.push(sectionDB);
-
-      courseDB.save( (err, coursebd) => {
-
-        if(err){
-          return res.status(400).json({
-            ok: false,
-            err
-          });
-        }
-    
-        res.json({
-          ok: true,
-          course: coursebd
-        });
-  
-      });
-
-    });
-
-  });
-  
-}
-
-let saveLesson = (req, res) => {
-
-  let id = req.params.section_id;
-
-  Section.findById(id, (err, sectionDB) => {
-
-    let body = req.body;
-
-    let lesson = new Lesson({
-      name: body.name,
-    });
-   
-    lesson.save( (err, lessonDB) => {
-
-      if(err){
-        return res.status(400).json({
-          ok: false,
-          err
-        });
-      }
-
-      sectionDB.lessons.push(lessonDB);
-
-      sectionDB.save( (err, sectionbd) => {
-
-        if(err){
-          return res.status(400).json({
-            ok: false,
-            err
-          });
-        }
-    
-        res.json({
-          ok: true,
-          section: sectionbd
-        });
-  
-      });
-
-    });
-
-  });
-  
-}
-
-let saveExternalResource = (req, res)=>{
-
-  let id = req.params.lesson_id;
-
-  Lesson.findById(id, (err, lessonDB) => {
-
-    let body = req.body;
-
-    let resource = new ExternalResource({
-      name: body.name,
-      url: body.url
-    });
-   
-    resource.save( (err, resourceDB) => {
-
-      if(err){
-        return res.status(400).json({
-          ok: false,
-          err
-        });
-      }
-
-      console.log(resourceDB);
-
-      lessonDB.external_resources.push(resourceDB);
-
-      lessonDB.save( (err, lessonbd) => {
-
-        if(err){
-          return res.status(400).json({
-            ok: false,
-            err
-          });
-        }
-    
-        res.json({
-          ok: true,
-          lesson: lessonbd
-        });
-  
-      });
-
-    });
-
-  });
-}
 
 module.exports = {
   saveCourse,
   getCourseById,
-  saveSection,
-  saveLesson,
-  saveExternalResource
+  getCourses
 }

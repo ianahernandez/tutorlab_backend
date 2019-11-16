@@ -20,6 +20,9 @@ const path = require('path');
 
 let uploadFile = (req, res) =>{
 
+  console.log(req.files)
+  console.log(req.files.file)
+
   let type = req.params.type; 
 
   let id = req.params.id; 
