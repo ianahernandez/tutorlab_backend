@@ -15,7 +15,7 @@ let instructorSchema = extendSchema(PublicUser, {
     required: false
   },
   ranking: {
-    type: mongoose.Decimal128,
+    type: Number,
     required: false,
     default: 0,
   },  

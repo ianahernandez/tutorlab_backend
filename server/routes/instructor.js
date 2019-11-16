@@ -15,6 +15,6 @@ const api = express.Router();
 // =====================
 // Obtener todos
 // =====================
-api.get('/instructor/courses', [ verifyToken, verifyInstructorRole ], instructorController.getInstructorCourses);
+api.get('/instructor/courses', [ verifyToken, verifyInstructorRole ], courseController.getInstructorCourses);
 
 module.exports = api;

@@ -7,6 +7,11 @@ const mongoose = require('mongoose');
 
 let Schema = mongoose.Schema;
 
+let validStatus = {
+  values: ['DRAFT', 'IN_REVIEW', 'APPROVED', 'REFUSED'],
+  message: '{VALUE} no es un estado válido' 
+}
+
 let resourceSchema = new Schema({
   name: {
     type: String,
@@ -74,9 +79,10 @@ let courseSchema = new Schema({
     default:''
   },
   price: {
-    type: mongoose.Decimal128,
+    type: Number,
     required: false,
-    default: 0
+    default: 0,
+    min: [0, 'Precio inválido'],
   },
   img: {
     type: String,
@@ -98,10 +104,6 @@ let courseSchema = new Schema({
     type: [String],
     required: false
   },
-  status: {
-    type: Boolean,
-    default: false
-  },
   messages: {
     welcome: {
       type: String,
@@ -120,6 +122,26 @@ let courseSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'User',
   },
+  ranking: {
+    type: Number,
+    required: false,
+    default: 0,
+  }, 
+  status: {
+    type: String,
+    default: 'DRAFT',
+    enum: validStatus
+  },
+  active: {
+    type: Boolean,
+    default: false,
+  },
+  published: {
+    type: Boolean,
+    default: false,
+  },
+  created_at : { type: Date, required: true, default: Date.now },
+  update_at  : { type: Date, required: true, default: Date.now },
 });
 
 const Course = mongoose.model('Course', courseSchema);
