@@ -6,6 +6,11 @@ const _ = require('underscore');
 
 const {Section, Lesson, Course} = require('../models/course'); 
 
+const fs = require('fs');
+
+const path = require('path');
+
+
 // =====================
 // Obtener leccion (clase) por Id
 // =====================
@@ -130,13 +135,13 @@ let deleteLesson = (req, res) => {
         ok: false,
         err
       });
-    }
+    } 
 
     Section.findById(lessonDB.section, (err, sectionDB) => {
       if(err){
         return res.status(500).json({
           ok: false,
-          err
+          err  
         });
       }
 
@@ -161,6 +166,15 @@ let deleteLesson = (req, res) => {
                   err
                 });
               }
+              
+
+              let pathImg = path.resolve(__dirname, `../../uploads/lessons/${ lessonDB.video }`);
+
+              if( fs.existsSync(pathImg) ){
+                fs.unlinkSync(pathImg);
+              } 
+
+
               return res.json({
                 ok: true,
                 section: sectionbd

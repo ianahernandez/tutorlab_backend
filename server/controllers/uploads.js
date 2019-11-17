@@ -317,5 +317,6 @@ let deleteFile = (type, filename) => {
 }
 
 module.exports = {
-  uploadFile
+  uploadFile,
+  deleteFile
 }
