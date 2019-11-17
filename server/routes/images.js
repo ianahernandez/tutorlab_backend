@@ -12,13 +12,11 @@ const path = require('path');
 
 const fs = require('fs');
 
-const { verifyImgFormat, verifyVideoFormat } = require('../middlewares/authorization.js');
-
 let noImagePath = path.resolve(__dirname,'../assets/no-image.jpg');
 
 let noImageUser = path.resolve(__dirname,'../assets/user.png');
 
-api.get('/images/:type/:img', [verifyImgFormat], (req,res) => {
+api.get('/images/:type/:img', (req,res) => {
 
   let type = req.params.type;
 
@@ -41,13 +39,43 @@ api.get('/images/:type/:img', [verifyImgFormat], (req,res) => {
 
 });
 
-api.get('/videos/:type/:src', [verifyVideoFormat], (req,res) => {
+api.get('/videos/:type/:src', (req,res) => {
 
   let type = req.params.type;
 
   let src = req.params.src;
 
   let pathImg = path.resolve(__dirname,`../../uploads/${ type }/${ src }`);
+
+  if( fs.existsSync(pathImg) ){
+    res.sendFile(pathImg);
+  }
+  else{
+    res.sendFile(noImagePath);
+  }
+
+});
+
+api.get('/course/video/:src', (req,res) => {
+
+  let src = req.params.src;
+
+  let pathImg = path.resolve(__dirname,`../../uploads/courses/video/${ src }`);
+
+  if( fs.existsSync(pathImg) ){
+    res.sendFile(pathImg);
+  }
+  else{
+    res.sendFile(noImagePath);
+  }
+
+});
+
+api.get('/course/img/:src', (req,res) => {
+
+  let src = req.params.src;
+
+  let pathImg = path.resolve(__dirname,`../../uploads/courses/img/${ src }`);
 
   if( fs.existsSync(pathImg) ){
     res.sendFile(pathImg);
