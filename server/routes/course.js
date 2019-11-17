@@ -17,6 +17,12 @@ const resourceController = require('../controllers/externalResource');
 
 const api = express.Router();
 
+// ==================================================
+// --------------------------------------------------
+//                  C U R S O 
+// ---------------------------------------------------
+// ===================================================
+
 // =====================
 // Obtener todos
 // =====================
@@ -52,10 +58,32 @@ api.put('/course/:id/publish', [ verifyToken, verifyInstructorRole ], courseCont
 // =======================================
 api.put('/course/:id/status', [ verifyToken, verifyAdminRole ], courseController.approveOrRefuseCourse);
 
+// ==================================================
+// --------------------------------------------------
+//                 S E C C I O N 
+// ---------------------------------------------------
+// ===================================================
+
 // =====================
 // Obtener Seccion por Id
 // =====================
 api.get('/section/:id', sectionController.getSectionById);
+
+// =====================
+// Agregar seccion
+// =====================
+api.post('/section/:course_id', [ verifyToken, verifyInstructorRole ], sectionController.saveSection);
+
+// =====================
+// Eliminar seccion
+// =====================
+api.delete('/section/:course_id/:section_id', [ verifyToken, verifyInstructorRole ], sectionController.deleteSection);
+
+// ==================================================
+// --------------------------------------------------
+//                 L E C C I O N 
+// ---------------------------------------------------
+// ===================================================
 
 // =====================
 // Obtener Leccion por Id
@@ -63,14 +91,22 @@ api.get('/section/:id', sectionController.getSectionById);
 api.get('/lesson/:id', lessonController.getLessonById);
 
 // =====================
-// Agregar seccion
-// =====================
-api.post('/section/:course_id', sectionController.saveSection);
-
-// =====================
 // Agregar leccion (clase)
 // =====================
-api.post('/lesson/:section_id', lessonController.saveLesson);
+api.post('/lesson/:course_id/:section_id', lessonController.saveLesson);
+
+
+// =====================
+// Actualizar leccion (clase)
+// =====================
+api.put('/lesson/:course_id/:section_id/:lesson_id', lessonController.updateLesson);
+
+
+// ==================================================
+// --------------------------------------------------
+//        R E C U R S O     E X T E R N O 
+// ---------------------------------------------------
+// ===================================================
 
 // =====================
 // Agregar recurso externo
