@@ -160,13 +160,15 @@ let verifyTokenResetPassword = (req, res, next) => {
 //=====================================================
 
 let verifyVideoFormat = (req, res, next) => {
-    let auxfile = req.params.src.split('.');saveExternalResource
 
-    if ( auxfile[auxfile.length -1].indexOf('mp4','avi') < 0 ) {
+    let auxfile = req.files.file.name.split('.');
+
+    if ( ['mp4','avi','mkv', ''].indexOf(auxfile[auxfile.length -1]) < 0 ) {
         return res.status(401).json({
             ok: false,
             err: {
-                message: 'Url inválida'
+                message: 'Formato inválido',
+                format: auxfile[auxfile.length -1]
             }
         });
     }
@@ -177,14 +179,15 @@ let verifyVideoFormat = (req, res, next) => {
 //=====================================================
 
 let verifyImgFormat = (req, res, next) => {
+    
+    let auxfile = req.files.file.name.split('.');
 
-    let auxfile = req.params.img.split('.');
-
-    if ( auxfile[auxfile.length -1].indexOf('jpg','jpeg','png') < 0 ) {
+    if ( ['jpg','jpeg','png'].indexOf(auxfile[auxfile.length -1]) < 0 ) {
         return res.status(401).json({
             ok: false,
             err: {
-                message: 'Url inválida'
+                message: 'Formato inválido',
+                format: auxfile[auxfile.length -1]
             }
         });
     }

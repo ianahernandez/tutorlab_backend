@@ -3,7 +3,7 @@
 //      By TutorLab Team ©
 // ====================================================
 
-const validType = ['users', 'categories', 'lessons'];
+const validType = ['users', 'categories', 'lessons', 'courses/video', 'courses/img'];
 
 const validExtention = ['jpg','jpeg','png','mp4','pdf'];
 
@@ -19,9 +19,6 @@ const path = require('path');
 
 
 let uploadFile = (req, res) =>{
-
-  console.log(req.files)
-  console.log(req.files.file)
 
   let type = req.params.type; 
 
@@ -72,23 +69,33 @@ let uploadFile = (req, res) =>{
       });
     }
 
-    uploadByType(type, id, res, filename);
+    uploadByType(type, id, res, filename, req.user._id);
 
   });
 
 }
 
-let uploadByType = (type,id,res,filename) =>{
+let uploadByType = (type,id,res,filename, instructor) =>{
   switch (type) {
     case 'users':
       userImage(id, res, filename);
       break;
+
     case 'categories':
       categoryImage(id, res, filename);
       break;
-      case 'lessons':
-        lessonVideo(id, res, filename);
-        break;
+
+    case 'lessons':
+      lessonVideo(id, res, filename);
+      break;
+
+    case 'courses/video':
+      courseVideo(id, res, filename, instructor);
+      break;
+    
+    case 'courses/img':
+      courseImage(id, res, filename, instructor);
+      break;
   
     default:
       break;
@@ -201,6 +208,94 @@ let lessonVideo = (id, res, filename) => {
       res.json({
         ok: true,
         lesson: lessonbd
+      });
+
+    });
+
+  });
+
+}
+
+let courseVideo = (id, res, filename, instructor) => {
+
+  Course.findById({_id: id, instructor: instructor}, (err, courseDB) => {
+    if(err){
+      deleteFile('courses/video', filename);
+      return res.status(500).json({
+        ok: false,
+        err
+      });
+    }
+
+    if( ! courseDB ){
+      deleteFile('courses/video', filename)
+      return res.status(400).json({
+        ok: false,
+        err: "El curso no existe"
+      });
+    }
+
+    deleteFile('courses/video', courseDB.video);
+    
+    courseDB.video = filename;
+    courseDB.update_at = new Date();
+   
+    courseDB.save( (err, coursebd) => {
+
+      if(err){
+        return res.status(400).json({
+          ok: false,
+          err
+        });
+      }
+
+      res.json({
+        ok: true,
+        course: coursebd
+      });
+
+    });
+
+  });
+
+}
+
+let courseImage = (id, res, filename, instructor) => {
+
+  Course.findOne({_id: id, instructor: instructor}, (err, courseDB) => {
+    if(err){
+      deleteFile('courses/img', filename);
+      return res.status(500).json({
+        ok: false,
+        err
+      });
+    }
+
+    if( ! courseDB ){
+      deleteFile('courses/img', filename)
+      return res.status(400).json({
+        ok: false,
+        err: "El curso no existe"
+      });
+    }
+
+    deleteFile('courses/img', courseDB.img);
+    
+    courseDB.img = filename;
+    courseDB.update_at = new Date();
+   
+    courseDB.save( (err, coursebd) => {
+
+      if(err){
+        return res.status(400).json({
+          ok: false,
+          err
+        });
+      }
+
+      res.json({
+        ok: true,
+        course: coursebd
       });
 
     });
