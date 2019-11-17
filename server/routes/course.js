@@ -93,13 +93,18 @@ api.get('/lesson/:id', lessonController.getLessonById);
 // =====================
 // Agregar leccion (clase)
 // =====================
-api.post('/lesson/:course_id/:section_id', lessonController.saveLesson);
+api.post('/lesson/:section_id', lessonController.saveLesson);
 
 
 // =====================
 // Actualizar leccion (clase)
 // =====================
-api.put('/lesson/:course_id/:section_id/:lesson_id', lessonController.updateLesson);
+api.put('/lesson/:lesson_id', lessonController.updateLesson);
+
+// =====================
+// Eliminar leccion (clase)
+// =====================
+api.delete('/lesson/:lesson_id', lessonController.deleteLesson);
 
 
 // ==================================================

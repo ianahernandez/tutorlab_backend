@@ -73,6 +73,7 @@ let saveSection = (req,res) =>{
     let section = new Section({
       title: body.title,
       description: body.description,
+      course: id
     });
    
     section.save( (err, sectionDB) => {

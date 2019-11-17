@@ -13,6 +13,8 @@ const Category = require('../models/category');
 
 const {Course, Section, Lesson, ExternalResource} = require('../models/course'); 
 
+const lessonController = require('../controllers/lesson');
+
 const fs = require('fs');
 
 const path = require('path');
@@ -196,7 +198,7 @@ let lessonVideo = (id, res, filename) => {
     
     lessonDB.video = filename;
    
-    lessonDB.save( (err, lessonbd) => {
+    lessonDB.save( async (err, lessonbd) => {
 
       if(err){
         return res.status(400).json({
@@ -205,10 +207,11 @@ let lessonVideo = (id, res, filename) => {
         });
       }
 
-      res.json({
-        ok: true,
-        lesson: lessonbd
-      });
+      let field = {
+        video: lessonbd.video 
+      }
+
+      await lessonController.updateFieldsLesson(id,field,res)
 
     });
 

@@ -21,6 +21,10 @@ let resourceSchema = new Schema({
     type: String,
     required: true,
   },
+  lesson: {
+    type: Schema.Types.ObjectId,
+    ref: 'Lesson',
+  },
 });
 
 let lessonSchema = new Schema({
@@ -35,7 +39,11 @@ let lessonSchema = new Schema({
   external_resources: {
     type: [resourceSchema],
     required:false,
-  }
+  },
+  section: {
+    type: Schema.Types.ObjectId,
+    ref: 'Section',
+  },
 });
 
 let sectionSchema = new Schema({
@@ -50,6 +58,10 @@ let sectionSchema = new Schema({
   lessons: {
     type: [lessonSchema],
     required:false,
+  },
+  course: {
+    type: Schema.Types.ObjectId,
+    ref: 'Course',
   }
 });
 
