@@ -90,6 +90,7 @@ let saveLesson = (req, res) => {
               }
               return res.json({
                 ok: true,
+                section: sectionDB,
                 lesson: lessonDB
               });
 
@@ -177,7 +178,8 @@ let deleteLesson = (req, res) => {
 
               return res.json({
                 ok: true,
-                section: sectionbd
+                section: sectionbd,
+                lesson: lessonDB
               });
 
             });
@@ -232,6 +234,7 @@ let updateFieldsLesson = (id, body, res) =>{
           }
           return res.json({
             ok: true,
+            section: sectionDB,
             lesson: lessonDB
           });
     

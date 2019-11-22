@@ -98,7 +98,7 @@ let following = (req, res) => {
     });
 }
 
-let followed = (req, res) => {
+let followMe = (req, res) => {
 
   let user_id = req.params.id || req.user._id ;
 
@@ -133,6 +133,6 @@ module.exports = {
   saveFollow,
   deleteFollow,
   following,
-  followed
+  followMe
 }
 

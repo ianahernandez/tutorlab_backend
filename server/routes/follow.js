@@ -5,19 +5,31 @@
 
 const express = require('express'); 
 
-const { verifyToken, verifyAdminRole } = require('../middlewares/authorization.js');
+const { verifyToken } = require('../middlewares/authorization.js');
 
 const followController = require('../controllers/follow');
 
 const api = express.Router();
 
+// =====================
+// Seguir usuario
+// =====================
 api.post('/follow', [verifyToken], followController.saveFollow);
 
+// =======================
+// Dejar de seguir usuario
+// =======================
 api.delete('/follow/:id', [verifyToken], followController.deleteFollow);
 
+// =====================
+// Siguiendo A
+// =====================
 api.get('/following/:id?', [verifyToken], followController.following);
 
-api.get('/followed/:id?', [verifyToken], followController.followed);
+// =====================
+// Seguidores
+// =====================
+api.get('/follow-me/:id?', [verifyToken], followController.followMe);
 
 
 module.exports = api;
