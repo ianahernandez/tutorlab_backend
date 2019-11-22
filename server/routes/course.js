@@ -5,7 +5,7 @@
 
 const express = require('express'); 
 
-const { verifyToken, verifyUserLogged, verifyInstructorRole, verifyUser, verifyAdminRole } = require('../middlewares/authorization.js');
+const { verifyToken, verifyInstructorRole, verifyUser, verifyAdminRole } = require('../middlewares/authorization.js');
 
 const courseController = require('../controllers/course');
 
@@ -67,7 +67,7 @@ api.put('/course/:id/status', [ verifyToken, verifyAdminRole ], courseController
 // =====================
 // Obtener Seccion por Id
 // =====================
-api.get('/section/:id', sectionController.getSectionById);
+api.get('/section/:id', [ verifyToken ], sectionController.getSectionById);
 
 // =====================
 // Agregar seccion
@@ -75,9 +75,14 @@ api.get('/section/:id', sectionController.getSectionById);
 api.post('/section/:course_id', [ verifyToken, verifyInstructorRole ], sectionController.saveSection);
 
 // =====================
+// Editar seccion
+// =====================
+api.put('/section/:section_id', [ verifyToken, verifyInstructorRole ], sectionController.updateSection);
+
+// =====================
 // Eliminar seccion
 // =====================
-api.delete('/section/:course_id/:section_id', [ verifyToken, verifyInstructorRole ], sectionController.deleteSection);
+api.delete('/section/:section_id', [ verifyToken, verifyInstructorRole ], sectionController.deleteSection);
 
 // ==================================================
 // --------------------------------------------------
@@ -88,23 +93,23 @@ api.delete('/section/:course_id/:section_id', [ verifyToken, verifyInstructorRol
 // =====================
 // Obtener Leccion por Id
 // =====================
-api.get('/lesson/:id', lessonController.getLessonById);
+api.get('/lesson/:id', [ verifyToken ], lessonController.getLessonById);
 
 // =====================
 // Agregar leccion (clase)
 // =====================
-api.post('/lesson/:section_id', lessonController.saveLesson);
+api.post('/lesson/:section_id', [ verifyToken, verifyInstructorRole ], lessonController.saveLesson);
 
 
 // =====================
 // Actualizar leccion (clase)
 // =====================
-api.put('/lesson/:lesson_id', lessonController.updateLesson);
+api.put('/lesson/:lesson_id', [ verifyToken, verifyInstructorRole ], lessonController.updateLesson);
 
 // =====================
 // Eliminar leccion (clase)
 // =====================
-api.delete('/lesson/:lesson_id', lessonController.deleteLesson);
+api.delete('/lesson/:lesson_id', [ verifyToken, verifyInstructorRole ], lessonController.deleteLesson);
 
 
 // ==================================================

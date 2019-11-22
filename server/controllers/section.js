@@ -109,16 +109,16 @@ let saveSection = (req,res) =>{
 }
 
 // ========================
-//  Eliminar seccion
+// Actualizar seccion
 // ========================
 
-let deleteSection = (req, res) => {
-
-  let course_id = req.params.course_id;
+let updateSection = (req,res) =>{
 
   let section_id = req.params.section_id;
 
-  Course.findOne({_id: course_id, instructor: req.user._id}, (err, courseDB) => {
+  let body = _.pick( req.body, ['title', 'description']);
+
+  Section.findByIdAndUpdate(section_id, body,  {new: true, runValidators: true,  context: 'query'}, (err, sectionDB) => {
 
     if(err){
       return res.status(500).json({
@@ -127,16 +127,64 @@ let deleteSection = (req, res) => {
       });
     }
 
-    if(!courseDB){
+    if(!sectionDB){
       return res.status(400).json({
         ok: false,
         err:{
-          message: "El curso no existe."
+          message: "Sección no encontrada."
         }
       });
     }
-   
-    Section.findOneAndDelete( {_id: section_id, __v:0 }, (err, sectionDB) => {
+    
+    Course.findOne({_id:sectionDB.course})
+    .update({'sections._id': section_id},
+    {'$set': {'sections.$': sectionDB}})
+    .exec((err,result) => {
+      if(err){
+        return res.status(500).json({
+          ok: false,
+          err
+        });
+      }
+      return res.json({
+        ok: true,
+        section: sectionDB
+      });
+
+    });
+
+  });
+  
+}
+
+
+// ========================
+//  Eliminar seccion
+// ========================
+
+let deleteSection = (req, res) => {
+
+  let section_id = req.params.section_id;
+
+  Section.findOneAndDelete( {_id: section_id, __v:0 }, (err, sectionDB) => {
+
+    if(err){
+      return res.status(500).json({
+        ok: false,
+        err
+      });
+    }
+
+    if(!sectionDB){
+      return res.status(400).json({
+        ok: false,
+        err:{
+          message: "La sección no existe, o tiene registros asociados (lecciones)"
+        }
+      });
+    }
+    
+    Course.findOne({ _id: sectionDB.course, instructor: req.user._id}, (err, courseDB) => {
 
       if(err){
         return res.status(500).json({
@@ -144,12 +192,12 @@ let deleteSection = (req, res) => {
           err
         });
       }
-
-      if(!sectionDB){
+  
+      if(!courseDB){
         return res.status(400).json({
           ok: false,
           err:{
-            message: "La sección no existe, o tiene registros asociados (lecciones)"
+            message: "El curso no existe."
           }
         });
       }
@@ -157,7 +205,7 @@ let deleteSection = (req, res) => {
       courseDB.sections.pull(sectionDB);
 
       courseDB.save( (err, coursebd) => {
-
+  
         if(err){
           return res.status(500).json({
             ok: false,
@@ -166,13 +214,10 @@ let deleteSection = (req, res) => {
         }
         res.json({
           ok: true,
-          course: coursebd
+          section: sectionDB
         });
-  
-      });
-
+      });       
     });
-
   });
 }
 
@@ -180,4 +225,5 @@ module.exports = {
   saveSection,
   deleteSection,
   getSectionById,
+  updateSection
 }

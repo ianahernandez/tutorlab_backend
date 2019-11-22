@@ -14,21 +14,33 @@ let getCourses = (req, res) => {
 
   // Aqui se mostrara la lista de cursos ACTIVOS
 
-    Course.find({active:true})
-    .select('title price img to_learn update_at created_at ranking')
-    .populate('category','name img')
-    .populate('instructor', 'name')
-    .exec((err, coursesDB) => {
-      if(err){
-          res.status(500).json({
-            err
-          })
-        }
-        res.json({
-          ok: true,
-          courses: coursesDB
+  let statuses = ["APPROVED"]
+
+  if(req.user != undefined){
+    if(req.user.role == "ADMIN_ROLE"){
+      statuses = ["APPROVED", "REFUSED", "IN_REVIEW"]
+    }
+  }
+
+  let filters = {
+    status : { $in: statuses }
+  }
+
+  Course.find(filters)
+  .select('title price img to_learn update_at created_at ranking')
+  .populate('category','name img')
+  .populate('instructor', 'name')
+  .exec((err, coursesDB) => {
+    if(err){
+        res.status(500).json({
+          err
         })
-    });
+      }
+      res.json({
+        ok: true,
+        courses: coursesDB
+      })
+  });
 }
 
 // =====================
@@ -197,7 +209,6 @@ let approveOrRefuseCourse = (req, res) =>{
   }
 
   if(status == "APPROVED"){
-    cambiarEstado.active = true;
     cambiarEstado.published = true;
   }
 
@@ -247,8 +258,6 @@ let sendCourseToReview = (req, res) => {
               }
           });
       }
-      console.log(courseDB.instructor)
-      console.log(req.user._id)
       if( courseDB.instructor != req.user._id){
         return res.status(403).json({
           ok: false,
@@ -328,7 +337,7 @@ let publishOrHideCourse = (req, res) => {
         });
       }
 
-      if( !courseDB.active ){
+      if( courseDB.status != "APPROVED"  ){
         return res.status(400).json({
           ok: false,
           err: {
