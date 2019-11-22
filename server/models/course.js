@@ -134,6 +134,10 @@ let courseSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'User',
   },
+  language:{
+    type: String,
+    default: "Español"
+  },
   ranking: {
     type: Number,
     required: false,
@@ -146,7 +150,7 @@ let courseSchema = new Schema({
   },
   active: {
     type: Boolean,
-    default: false,
+    default: true,
   },
   published: {
     type: Boolean,

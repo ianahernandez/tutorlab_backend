@@ -15,19 +15,22 @@ let getCourses = (req, res) => {
   // Aqui se mostrara la lista de cursos ACTIVOS
 
   let statuses = ["APPROVED"]
+  let opt_active = [true]
 
   if(req.user != undefined){
     if(req.user.role == "ADMIN_ROLE"){
-      statuses = ["APPROVED", "REFUSED", "IN_REVIEW"]
+      statuses = ["APPROVED", "REFUSED", "IN_REVIEW"];
+      opt_active.push(false);
     }
   }
 
   let filters = {
-    status : { $in: statuses }
+    status : { $in: statuses },
+    active: { $in: opt_active }
   }
 
   Course.find(filters)
-  .select('title price img to_learn update_at created_at ranking')
+  .select('title price img to_learn update_at created_at ranking status active')
   .populate('category','name img')
   .populate('instructor', 'name')
   .exec((err, coursesDB) => {
@@ -99,6 +102,7 @@ let saveCourse = (req, res) =>{
     to_learn: body.to_learn,
     requirements: body.requirements,
     target_group: body.target_group,
+    language: body.language,
     instructor: req.user._id
   });
 
@@ -166,7 +170,7 @@ let updateCourse = (req, res) =>{
 let getInstructorCourses = (req, res) => {
 
   if(req.user.role == "INSTRUCTOR_ROLE"){
-      Course.find({instructor: req.user._id})
+      Course.find({instructor: req.user._id, active: true})
       .select('title price img to_learn update_at created_at status published ranking')
       .populate('category','name img')
       .exec((err, coursesDB) => {
@@ -365,6 +369,60 @@ let publishOrHideCourse = (req, res) => {
   });
 }
 
+// =======================================
+// Eliminación lógica de curso
+// =======================================
+
+let deleteCourse = (req, res) => {
+
+  let id = req. params.id;
+
+  Course.findById(id, async(err, courseDB) => {
+      if (err) {
+          return res.status(500).json({
+              ok: false,
+              err
+          });
+      }
+      if (!courseDB) {
+          return res.status(400).json({
+              ok: false,
+              err: {
+                message: "El curso no existe."
+              }
+          });
+      }
+
+      if( courseDB.instructor != req.user._id){
+        return res.status(403).json({
+          ok: false,
+          err: {
+            message: "No tiene permisos para ejecutar esta operación."
+          }
+        });
+      }
+
+      // SI hay estudiantes inscritos NO ELIMINAR
+
+      courseDB.active = false;
+      courseDB.save( (err, coursebd) =>{
+        if (err) {
+          return res.status(500).json({
+              ok: false,
+              err
+          });
+      }
+
+      res.status(201).json({
+          ok: true,
+          course: coursebd,
+      });
+
+      });
+      
+  });
+}
+
 
 module.exports = {
   saveCourse,
@@ -374,5 +432,6 @@ module.exports = {
   updateCourse,
   getInstructorCourses,
   sendCourseToReview,
-  publishOrHideCourse
+  publishOrHideCourse,
+  deleteCourse
 }
