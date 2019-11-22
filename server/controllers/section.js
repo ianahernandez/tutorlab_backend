@@ -214,7 +214,7 @@ let deleteSection = (req, res) => {
         }
         res.json({
           ok: true,
-          section: sectionDB
+          course: courseDB
         });
       });       
     });

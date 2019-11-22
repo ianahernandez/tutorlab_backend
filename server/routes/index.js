@@ -19,6 +19,8 @@ app.use( '/api', require('./category') );
 
 app.use( '/api', require('./course') );
 
+app.use( '/api', require('./follow') );
+
 app.use( '/api', require('./instructor') );
 
 module.exports = app;
