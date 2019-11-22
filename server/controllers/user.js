@@ -15,6 +15,8 @@ const instructorController = require('./instructor');
 
 const studentController = require('./student');
 
+const Follow = require('../models/follow');
+
 const mailController = require('./mail');
 
 
@@ -97,6 +99,56 @@ let getUsers = (req, res) => {
       });
 }
 
+// ==========================
+// Obtener usuario por Id
+// ==========================
+
+let getUserById = (req, res) => {
+  let id = req.params.id;
+  let user_id = req.user._id;
+  User.findById(id, (err, userDB) => {
+    if(err){
+      return res.status(500).json({
+        ok: false,
+        err
+      });
+    }
+    if(!userDB){
+      return res.status(400).json({
+        ok: false,
+        err: {
+          message: "Usuario no encontrado"
+        }
+      })
+    }
+    Follow.find({ $or: [{user: id, followed: user_id}, {followed: id, user: user_id}] }, (err, followsDB) => {
+      if(err){
+        return res.status(500).json({
+          ok: false,
+          err
+        });
+      }
+      if(!followsDB){
+        return res.status(400).json({
+          ok: false,
+          err: {
+            message: "No se puede comprobar el seguimiento"
+          }
+        })
+      }
+
+      let following = (followsDB.filter(follow => follow.user == user_id).length > 0);
+      let followme = (followsDB.filter(follow => follow.user == id).length > 0);
+
+      return res.json({
+        ok: true,
+        user: userDB,
+        following,
+        followme
+      })
+    });
+  });
+}
 // =====================
 // Actualizar un usuario
 // =====================
@@ -343,6 +395,7 @@ let deleteUser = (req, res) => {
 module.exports = { 
   saveUser, 
   getUsers, 
+  getUserById,
   updateUser,
   deleteUser,
   changePassword,

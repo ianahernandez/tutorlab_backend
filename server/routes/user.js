@@ -20,11 +20,7 @@ api.get('/users', verifyToken, userController.getUsers);
 // ==================================
 //Obtener usuario por id
 // ==================================
-api.get('/user', function (req, res) {
-
-  res.json('get user');
-
-});
+api.get('/user/:id', verifyToken, userController.getUserById);
 
 // ==================================
 //Registrar usuario
