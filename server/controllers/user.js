@@ -72,7 +72,7 @@ let getUsers = (req, res) => {
   let from = req.query.from || 0;
   from = Number(from);
 
-  let limit = req.query.limit || 5;
+  let limit = req.query.limit || 30;
   limit = Number(limit);
 
 
@@ -89,12 +89,20 @@ let getUsers = (req, res) => {
         }
 
         User.countDocuments({ status: true }, (err, count) =>{
-          res.json({
-            ok: true,
-            users,
-            count
+
+          followUserIds(req.user._id).then((ids) => {
+            // console.log(ids)
+            res.json({
+              ok: true,
+              users,
+              usersFollowing: ids.following,
+              usersFollowMe: ids.followme,
+              count
+            });
           });
-        })
+          
+
+        });
 
       });
 }
@@ -121,7 +129,7 @@ let getUserById = (req, res) => {
         }
       })
     }
-    Follow.find({ $or: [{user: id, followed: user_id}, {followed: id, user: user_id}] }, (err, followsDB) => {
+    Follow.find({ $or: [{user: id, followed: user_id}, {followed: id, user: user_id}] }, async (err, followsDB) => {
       if(err){
         return res.status(500).json({
           ok: false,
@@ -140,9 +148,21 @@ let getUserById = (req, res) => {
       let following = (followsDB.filter(follow => follow.user == user_id).length > 0);
       let followme = (followsDB.filter(follow => follow.user == id).length > 0);
 
+      let data;
+
+      if(userDB.role == 'STUDENT_ROLE'){
+          data = await studentController.getStudentByUserId(userDB.id, req, res);
+      }
+  
+      else if(userDB.role == 'INSTRUCTOR_ROLE'){
+          data = await instructorController.getInstructorByUserId(userDB.id, req, res);
+      }
+
+
       return res.json({
         ok: true,
         user: userDB,
+        data,
         following,
         followme
       })
@@ -392,6 +412,27 @@ let deleteUser = (req, res) => {
 
 }
 
+
+async function followUserIds (user_id) {
+
+  let following = []; 
+  let followme = [];
+
+  let aux_following = await Follow.find({ user: user_id }).select({'_id':0, '__v':0, 'user':0})
+
+  let aux_followme = await Follow.find({ followed: user_id }).select({'_id':0, '__v':0,'followed':0});
+
+  aux_following.forEach( follow => following.push(follow.followed));
+
+  aux_followme.forEach( follow => followme.push(follow.user));
+
+  return {
+    following,
+    followme
+  }
+  
+}
+
 module.exports = { 
   saveUser, 
   getUsers, 
@@ -401,6 +442,7 @@ module.exports = {
   changePassword,
   forgotPassword,
   authReset,
-  passwordReset
+  passwordReset,
+  followUserIds
 }
 

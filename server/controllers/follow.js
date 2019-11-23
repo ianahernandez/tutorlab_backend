@@ -7,6 +7,8 @@ const User = require('../models/user');
 
 const Follow = require('../models/follow');
 
+const { followUserIds } = require('./user');
+
 let saveFollow = (req, res) => {
   let body = req.body;
 
@@ -72,7 +74,7 @@ let following = (req, res) => {
   let user_id = req.params.id || req.user._id ;
 
   Follow.find({user: user_id})
-    .select('-user')
+    .select('-user -_id -__v')
     .populate('followed', 'name img username')
     .exec( (err, followDB) => {
       if(err){
@@ -90,10 +92,13 @@ let following = (req, res) => {
           }
         });
       }
-  
-      res.json({
-        ok: true,
-        follows: followDB
+
+      followUserIds(req.user._id).then((ids) => {
+        res.json({
+          ok: true,
+          follows: followDB,
+          usersFollowMe: ids.followme,
+        });
       });
     });
 }
@@ -103,7 +108,7 @@ let followMe = (req, res) => {
   let user_id = req.params.id || req.user._id ;
 
   Follow.find({followed: user_id})
-    .select('-followed')
+    .select('-followed -_id -__v')
     .populate('user', 'name img username')
     .exec( (err, followDB) => {
       if(err){
@@ -121,10 +126,13 @@ let followMe = (req, res) => {
           }
         });
       }
-  
-      res.json({
-        ok: true,
-        follows: followDB
+
+      followUserIds(req.user._id).then((ids) => {
+        res.json({
+          ok: true,
+          follows: followDB,
+          usersFollowing: ids.following,
+        });
       });
     });
 }
