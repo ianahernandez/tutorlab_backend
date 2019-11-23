@@ -133,7 +133,7 @@ let updateCourse = (req, res) =>{
 
   let body = _.pick( req.body, 
     ['title', 'subtitle', 'category', 'description', 'price', 'messages',
-    'to_learn', 'requirements', 'taget_group']);
+    'to_learn', 'requirements', 'taget_group', 'language']);
 
     body.update_at = new Date();
 
