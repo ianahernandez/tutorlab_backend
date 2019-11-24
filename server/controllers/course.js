@@ -16,21 +16,24 @@ let getCourses = (req, res) => {
 
   let statuses = ["APPROVED"]
   let opt_active = [true]
+  let opt_published = [true]
 
   if(req.user != undefined){
     if(req.user.role == "ADMIN_ROLE"){
       statuses = ["APPROVED", "REFUSED", "IN_REVIEW"];
       opt_active.push(false);
+      opt_published.push(false);
     }
   }
 
   let filters = {
     status : { $in: statuses },
-    active: { $in: opt_active }
+    active: { $in: opt_active },
+    published: { $in: opt_published }
   }
 
   Course.find(filters)
-  .select('title price img to_learn update_at created_at ranking status active')
+  .select('title subtitle price img to_learn update_at created_at ranking status active')
   .populate('category','name img')
   .populate('instructor', 'name')
   .exec((err, coursesDB) => {
@@ -171,7 +174,7 @@ let getInstructorCourses = (req, res) => {
 
   if(req.user.role == "INSTRUCTOR_ROLE"){
       Course.find({instructor: req.user._id, active: true})
-      .select('title price img to_learn update_at created_at status published ranking')
+      .select('title subtitle active price img to_learn update_at created_at status published ranking')
       .populate('category','name img')
       .exec((err, coursesDB) => {
 
@@ -218,7 +221,7 @@ let approveOrRefuseCourse = (req, res) =>{
 
   Course.findByIdAndUpdate( id, cambiarEstado, {new: true, context: 'query'}, (err, courseDB) => {
     if(err){
-      return res.status(400).json({
+      return res.status(500).json({
         ok: false,
         err
       });

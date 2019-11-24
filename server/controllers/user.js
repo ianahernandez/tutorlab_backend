@@ -11,6 +11,8 @@ const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
 
+const mongoose = require('mongoose')
+
 const instructorController = require('./instructor');
 
 const studentController = require('./student');
@@ -105,6 +107,39 @@ let getUsers = (req, res) => {
         });
 
       });
+}
+
+// ==========================
+// Sugerir usuarios
+// ==========================
+let getSuggestUsers = (req, res) => {
+  followUserIds(req.user._id).then((ids) => {
+    let following = ids.following;
+    let followers = ids.followme;
+
+    User.find({status: true, "_id" : { $nin: following.concat(followers) } }, (err, userDB) => {
+      if(err){
+        return res.status(500).json({
+          ok: false,
+          err
+        });
+      }
+      if(!userDB){
+        return res.status(400).json({
+          ok: false,
+          err: {
+            message: "No hay coicidencias"
+          }
+        });
+      }
+
+      res.json({
+        ok: true,
+        users: userDB
+      });
+
+    });
+  });
 }
 
 // ==========================
@@ -437,6 +472,7 @@ module.exports = {
   saveUser, 
   getUsers, 
   getUserById,
+  getSuggestUsers,
   updateUser,
   deleteUser,
   changePassword,

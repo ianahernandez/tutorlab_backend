@@ -75,7 +75,7 @@ let following = (req, res) => {
 
   Follow.find({user: user_id})
     .select('-user -_id -__v')
-    .populate('followed', 'name img username')
+    .populate('followed', 'name img username role')
     .exec( (err, followDB) => {
       if(err){
         return res.status(500).json({
@@ -109,7 +109,7 @@ let followMe = (req, res) => {
 
   Follow.find({followed: user_id})
     .select('-followed -_id -__v')
-    .populate('user', 'name img username')
+    .populate('user', 'name img username role')
     .exec( (err, followDB) => {
       if(err){
         return res.status(500).json({

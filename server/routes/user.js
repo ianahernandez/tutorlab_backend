@@ -16,6 +16,11 @@ const api = express.Router();
 // ==================================
 api.get('/users', verifyToken, userController.getUsers);
 
+// ==================================
+// Sugerir usuarios
+// ==================================
+api.get('/suggest-users', verifyToken, userController.getSuggestUsers);
+
 
 // ==================================
 //Obtener usuario por id
