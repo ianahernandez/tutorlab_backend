@@ -59,9 +59,10 @@ api.put('/course/:id/publish', [ verifyToken, verifyInstructorRole ], courseCont
 api.put('/course/:id/status', [ verifyToken, verifyAdminRole ], courseController.approveOrRefuseCourse);
 
 // =======================================
-// Aprobar o rechazar Curso
+// Eliminar logico de curso
 // =======================================
 api.delete('/course/:id', [ verifyToken, verifyInstructorRole ], courseController.deleteCourse);
+
 
 // ==================================================
 // --------------------------------------------------

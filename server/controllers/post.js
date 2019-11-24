@@ -11,8 +11,10 @@ const { Post, Comment } = require('../models/post');
 
 const { Course } = require('../models/course'); 
 
+const { followUserIds } = require('./user');
+
 // =====================
-// Crear nuevo post
+// Crear nueva publicacion
 // =====================
 let savePost = (req, res) => {
   let body = req.body;
@@ -59,9 +61,9 @@ let savePost = (req, res) => {
   });
 }
 
-// =====================
-// Obtener post por Id
-// =====================
+// ============================
+// Obtener publicacion por Id
+// ============================
 let getPostById = (req, res) => {
   let id = req.params.id;
   Post.findById(id)
@@ -70,7 +72,6 @@ let getPostById = (req, res) => {
     .populate('author', 'name img')
     .populate('likes', 'name img')
     .exec((err, postDB) => {
-      console.log(postDB)
       if(err){
         return res.status(500).json({
           ok: false,
@@ -90,6 +91,83 @@ let getPostById = (req, res) => {
         post: postDB
       })
     });
+}
+
+// ===============================
+// Obtener publicaciones por autor
+// ===============================
+let getPosts = (req, res) => {
+
+  let author_id = req.params.author_id || req.user._id;
+
+  Post.find({author: author_id})
+  .populate({path: 'post', populate: { path: 'author', select: 'name img' }})
+  .populate({path: 'course', select:'title price img created_at ranking description instructor', populate: {path: 'instructor', select: 'name img' }})
+  .populate('author', 'name img')
+  .populate('likes', 'name img')
+  .exec((err, postDB) => {
+    if(err){
+      return res.status(500).json({
+        ok: false,
+        err
+      });
+    }
+    if(!postDB){
+      return res.status(400).json({
+        ok: false,
+        err: {
+          message: "No hay publicaciones."
+        }
+      });
+    }
+    res.json({
+      ok: true,
+      posts: postDB
+    })
+  });
+
+}
+
+// =========================================
+// Obtener publicacion de usuarios que sigo
+// =========================================
+let getPostByFollowing = (req, res) => {
+
+  followUserIds(req.user._id).then((ids) => {
+    let users_following = ids.following;
+    users_following.push(req.user._id);
+    Post.find({author: { $in: users_following}})
+    .populate({path: 'post', populate: { path: 'author', select: 'name img' }})
+    .populate({path: 'course', select:'title price img created_at ranking description instructor', populate: {path: 'instructor', select: 'name img' }})
+    .populate('author', 'name img')
+    .populate('likes', 'name img')
+    .exec((err, postDB) => {
+      if(err){
+        return res.status(500).json({
+          ok: false,
+          err
+        });
+      }
+      if(!postDB){
+        return res.status(400).json({
+          ok: false,
+          err: {
+            message: "No hay publicaciones."
+          }
+        });
+      }
+      res.json({
+        ok: true,
+        posts: postDB
+      })
+    });
+  })
+  .catch((err) => {
+    res.status(500).json({
+      ok:false,
+      err
+    })
+  });
 }
 
 // =====================
@@ -507,6 +585,8 @@ let getCommentsByPost = (req, res) => {
 module.exports = {
   savePost,
   getPostById,
+  getPosts,
+  getPostByFollowing,
   savePostCourse,
   sharePost,
   deletePost,

@@ -5,7 +5,7 @@
 
 const express = require('express'); 
 
-const { verifyToken, verifyAdminRole, verifyInstructorRole } = require('../middlewares/authorization.js');
+const { verifyToken, verifyInstructorRole } = require('../middlewares/authorization.js');
 
 const postController = require('../controllers/post');
 
@@ -17,9 +17,19 @@ const api = express.Router();
 api.post('/post', verifyToken , postController.savePost);
 
 // =====================
-// Crear nuevo Post
+// Obtener post por id
 // =====================
 api.get('/post/:id', verifyToken , postController.getPostById);
+
+// ===============================
+// Obtener publicaciones por autor
+// ===============================
+api.get('/posts/:author_id?', verifyToken , postController.getPosts);
+
+// ============================================
+// Obtener publicaciones por usuarios que sigo
+// ============================================
+api.get('/posts-all', verifyToken , postController.getPostByFollowing);
 
 // =====================
 // Publicar Curso
