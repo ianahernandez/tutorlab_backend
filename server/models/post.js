@@ -7,20 +7,6 @@ const mongoose = require('mongoose');
 
 let Schema = mongoose.Schema;
 
-let likeSchema = new Schema({
-  user: {
-    type: Schema.Types.ObjectId,
-    ref: "User",
-    required: [true, "El usuario es requerido"]
-  },
-  post: {
-    type: Schema.Types.ObjectId,
-    ref: "Post",
-    required: [true, "La publicación es requerida"]
-  },
-
-});
-
 let postSchema = new Schema({
   title: {
     type: String,
@@ -90,11 +76,9 @@ let commentSchema = new Schema({
 });
 
 const Post = mongoose.model('Post', postSchema);
-const Like = mongoose.model('Like', likeSchema);
 const Comment = mongoose.model('Comment', commentSchema);
 
 module.exports = {
   Post,
-  Like,
   Comment
 }

@@ -7,7 +7,7 @@ const _ = require('underscore');
 
 const { uploadFile } = require('./uploads');
 
-const { Post, Like, Comment } = require('../models/post'); 
+const { Post, Comment } = require('../models/post'); 
 
 const { Course } = require('../models/course'); 
 
@@ -299,7 +299,6 @@ let saveLike = (req, res) => {
 // =====================
 //  Eliminar like a post
 // =====================
-
 let deleteLike = (req, res) => {
 
   let id = req.params.id;
@@ -357,12 +356,68 @@ let deleteLike = (req, res) => {
   });
 }
 
+// =====================
+//  Guardar comentario
+// =====================
+let saveComment = (req, res) => {
+
+  let body = req.body;
+  let id = req.params.post_id;
+
+  Post.findById(id, (err, postDB) => {
+    if(err){
+      return res.status(500).json({
+        ok: false,
+        err
+      });
+    }
+    if(!postDB){
+      return res.status(400).json({
+        ok: false,
+        err: {
+          message: "Publicación no econtrada."
+        }
+      });
+    }
+
+    let comment = new Comment({
+      text: body.text,
+      user: req.user._id,
+      post: id
+    });
+
+    comment.save((err, commentDB) => {
+      if(err){
+        return res.status(500).json({
+          ok: false,
+          err
+        });
+      }
+      if(!commentDB){
+        return res.status(400).json({
+          ok: false,
+          err: {
+            message: "Error al comentar."
+          }
+        });
+      }
+
+      res.json({
+        ok: true,
+        comment: commentDB
+      });
+
+    });
+  }); 
+}
+
 module.exports = {
   savePost,
   savePostCourse,
   sharePost,
   deletePost,
   saveLike,
-  deleteLike
+  deleteLike,
+  saveComment
 
 }

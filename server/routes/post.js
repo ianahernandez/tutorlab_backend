@@ -32,13 +32,18 @@ api.post('/share/:post_id', verifyToken , postController.sharePost);
 api.delete('/post/:id', verifyToken , postController.deletePost);
 
 // =====================
-// Like Post
+// Guardar Like Post
 // =====================
 api.post('/like/:id', verifyToken , postController.saveLike);
 
 // =====================
-// Delete like Post
+// Eliminar like Post
 // =====================
 api.delete('/like/:id', verifyToken , postController.deleteLike);
+
+// =====================
+// Comentar Post
+// =====================
+api.post('/comment/:post_id', verifyToken , postController.saveComment);
 
 module.exports = api;
