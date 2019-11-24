@@ -3,7 +3,7 @@
 //      By TutorLab Team ©
 // ====================================================
 
-const validType = ['users', 'categories', 'lessons', 'courses/video', 'courses/img'];
+const validType = ['users', 'categories', 'lessons', 'courses/video', 'courses/img', 'posts'];
 
 const validExtention = ['jpg','jpeg','png','mp4','pdf'];
 
@@ -71,13 +71,13 @@ let uploadFile = (req, res) =>{
       });
     }
 
-    uploadByType(type, id, res, filename, req.user._id);
+    uploadByType(type, id, res, filename, req.user._id, req);
 
   });
 
 }
 
-let uploadByType = (type,id,res,filename, instructor) =>{
+let uploadByType = (type,id,res,filename, instructor, req) =>{
   switch (type) {
     case 'users':
       userImage(id, res, filename);
@@ -98,6 +98,10 @@ let uploadByType = (type,id,res,filename, instructor) =>{
     case 'courses/img':
       courseImage(id, res, filename, instructor);
       break;
+
+    case 'posts':
+      let post = req.params.post;
+      postMedia(res, filename, post);
   
     default:
       break;
@@ -307,6 +311,36 @@ let courseImage = (id, res, filename, instructor) => {
 
 }
 
+let postMedia = (res, filename, post) => {
+  post.media = filename;
+  post.save( (err, postbd) => {
+    if(err){
+      return res.status(500).json({
+        ok: false,
+        err
+      });
+    }
+    if(!postbd){
+      return res.status(400).json({
+        ok: false,
+        err: {
+          message: "Error al publicar."
+        }
+      });
+    }
+
+    postbd
+      .populate('author', 'name img')
+      .execPopulate((err, post) => {
+        res.json({
+          ok: true,
+          post
+        });
+      });
+
+  });
+}
+
 let deleteFile = (type, filename) => {
 
   let pathImg = path.resolve(__dirname, `../../uploads/${ type }/${ filename }`);
@@ -315,6 +349,7 @@ let deleteFile = (type, filename) => {
       fs.unlinkSync(pathImg);
     }  
 }
+
 
 module.exports = {
   uploadFile,

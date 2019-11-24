@@ -21,6 +21,8 @@ app.use( '/api', require('./course') );
 
 app.use( '/api', require('./follow') );
 
+app.use( '/api', require('./post') );
+
 app.use( '/api', require('./instructor') );
 
 module.exports = app;

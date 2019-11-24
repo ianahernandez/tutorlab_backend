@@ -7,6 +7,20 @@ const mongoose = require('mongoose');
 
 let Schema = mongoose.Schema;
 
+let likeSchema = new Schema({
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    required: [true, "El usuario es requerido"]
+  },
+  post: {
+    type: Schema.Types.ObjectId,
+    ref: "Post",
+    required: [true, "La publicación es requerida"]
+  },
+
+});
+
 let postSchema = new Schema({
   title: {
     type: String,
@@ -18,7 +32,7 @@ let postSchema = new Schema({
   },
   content: {
     type: String,
-    required: [true, "El contenido del post es requerido"]
+    required: false
   },
   author: {
     type: Schema.Types.ObjectId,
@@ -35,13 +49,52 @@ let postSchema = new Schema({
   },
   url: {
     type: String,
-    required: [true, "La url es requerida"]
+    required: false
   },
+  post: {
+    type: Schema.Types.ObjectId,
+    ref: "Post",
+    required: false
+  },
+  course: {
+    type: Schema.Types.ObjectId,
+    ref: "Course",
+    required: false
+  },
+  likes: [
+    { type: Schema.Types.ObjectId, ref:'User'}
+  ],
   created_at : { type: Date, required: true, default: Date.now },
 });
 
+let commentSchema = new Schema({
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    required: [true, "El usuario es requerido"]
+  },
+  post: {
+    type: Schema.Types.ObjectId,
+    ref: "Post",
+    required: [true, "La publicación es requerida"]
+  },
+  text: {
+    type: String,
+    required: true
+  },
+  created_at: {
+    type: Date,
+    default: new Date()
+  }
+
+});
+
 const Post = mongoose.model('Post', postSchema);
+const Like = mongoose.model('Like', likeSchema);
+const Comment = mongoose.model('Comment', commentSchema);
 
 module.exports = {
   Post,
+  Like,
+  Comment
 }
