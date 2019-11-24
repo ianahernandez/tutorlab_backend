@@ -12,9 +12,14 @@ const postController = require('../controllers/post');
 const api = express.Router();
 
 // =====================
-// Crear nueva categoria
+// Crear nuevo Post
 // =====================
 api.post('/post', verifyToken , postController.savePost);
+
+// =====================
+// Crear nuevo Post
+// =====================
+api.get('/post/:id', verifyToken , postController.getPostById);
 
 // =====================
 // Publicar Curso
@@ -45,5 +50,15 @@ api.delete('/like/:id', verifyToken , postController.deleteLike);
 // Comentar Post
 // =====================
 api.post('/comment/:post_id', verifyToken , postController.saveComment);
+
+// =====================
+// Eliminar comentario
+// =====================
+api.delete('/comment/:id', verifyToken , postController.deleteComment);
+
+// ==============================
+// Obtener comentarios de un post
+// ==============================
+api.get('/comment/:post_id', verifyToken , postController.getCommentsByPost);
 
 module.exports = api;

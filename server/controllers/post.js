@@ -14,7 +14,6 @@ const { Course } = require('../models/course');
 // =====================
 // Crear nuevo post
 // =====================
-
 let savePost = (req, res) => {
   let body = req.body;
   let author = req.user._id;
@@ -58,6 +57,39 @@ let savePost = (req, res) => {
       });
     }
   });
+}
+
+// =====================
+// Obtener post por Id
+// =====================
+let getPostById = (req, res) => {
+  let id = req.params.id;
+  Post.findById(id)
+    .populate({path: 'post', populate: { path: 'author', select: 'name img' }})
+    .populate({path: 'course', select:'title price img created_at ranking description instructor', populate: {path: 'instructor', select: 'name img' }})
+    .populate('author', 'name img')
+    .populate('likes', 'name img')
+    .exec((err, postDB) => {
+      console.log(postDB)
+      if(err){
+        return res.status(500).json({
+          ok: false,
+          err
+        });
+      }
+      if(!postDB){
+        return res.status(400).json({
+          ok: false,
+          err: {
+            message: "Publicación no econtrada."
+          }
+        });
+      }
+      res.json({
+        ok: true,
+        post: postDB
+      })
+    });
 }
 
 // =====================
@@ -402,22 +434,85 @@ let saveComment = (req, res) => {
         });
       }
 
-      res.json({
-        ok: true,
-        comment: commentDB
+      commentDB
+      .populate('user', 'name img')
+      .execPopulate((err, comment) => {
+        res.json({
+          ok: true,
+          comment
+        });
       });
 
     });
   }); 
 }
 
+// =====================
+//  Eliminar comentario
+// =====================
+let deleteComment = (req, res) => {
+  let id = req.params.id;
+  Comment.findByIdAndDelete(id, (err, commentDB) => {
+    if(err){
+      return res.status(500).json({
+        ok: false,
+        err
+      });
+    }
+    if(!commentDB){
+      return res.status(400).json({
+        ok: false,
+        err: {
+          message: "Error al eliminar comentario."
+        }
+      });
+    }
+    res.json({
+      ok:true,
+      commentDB
+    });
+  });
+}
+
+// ===================================
+//  Obetener comentarios de un post
+// ===================================
+let getCommentsByPost = (req, res) => {
+  let id = req.params.post_id;
+  Comment.find({post: id})
+  .populate('user', 'name img')
+  .exec((err, commentDB) => {
+    if(err){
+      return res.status(500).json({
+        ok: false,
+        err
+      });
+    }
+    if(!commentDB){
+      return res.status(404).json({
+        ok: false,
+        err: {
+          message: "No hay comentarios."
+        }
+      });
+    }
+    res.json({
+      ok:true,
+      comments: commentDB
+    });
+  });
+}
+
+
 module.exports = {
   savePost,
+  getPostById,
   savePostCourse,
   sharePost,
   deletePost,
   saveLike,
   deleteLike,
-  saveComment
-
+  saveComment,
+  deleteComment,
+  getCommentsByPost
 }
