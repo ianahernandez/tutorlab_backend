@@ -42,6 +42,11 @@ let postSchema = new Schema({
     ref: "Post",
     required: false
   },
+  ref: {
+    type: Schema.Types.ObjectId,
+    ref: "Post",
+    required: false
+  },
   course: {
     type: Schema.Types.ObjectId,
     ref: "Course",

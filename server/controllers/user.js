@@ -117,7 +117,7 @@ let getSuggestUsers = (req, res) => {
     let following = ids.following;
     let followers = ids.followme;
 
-    User.find({status: true, "_id" : { $nin: following.concat(followers) } }, (err, userDB) => {
+    User.find({status: true, "_id" : { $nin: following.concat(followers).concat(req.user._id) } }, (err, userDB) => {
       if(err){
         return res.status(500).json({
           ok: false,

@@ -61,6 +61,47 @@ let savePost = (req, res) => {
   });
 }
 
+// =====================
+// Subir imagen publicacion
+// =====================
+let uploadMediaPost = (req, res) => {
+  let id = req.params.id;
+
+  Post.findById(id, async (err, postDB) => {
+    if(err){
+      return res.status(500).json({
+        ok: false,
+        err
+      });
+    }
+    if(!postDB){
+      return res.status(400).json({
+        ok: false,
+        err: {
+          message: "Error al subir recurso multimedia."
+        }
+      });
+    }
+
+    if(req.files){
+      req.params.type = "posts"; 
+      req.params.id = postDB._id; 
+      req.params.post = postDB; 
+      uploadFile(req, res);
+    }
+    else{
+      postDB
+      .populate('author', 'name img')
+      .execPopulate((err, post) => {
+        res.json({
+          ok: true,
+          post
+        });
+      });
+    }
+  });
+}
+
 // ============================
 // Obtener publicacion por Id
 // ============================
@@ -102,6 +143,7 @@ let getPosts = (req, res) => {
 
   Post.find({author: author_id})
   .populate({path: 'post', populate: { path: 'author', select: 'name img' }})
+  .populate({path: 'ref', populate: { path: 'author', select: 'name img' }})
   .populate({path: 'course', select:'title price img created_at ranking description instructor', populate: {path: 'instructor', select: 'name img' }})
   .populate('author', 'name img')
   .populate('likes', 'name img')
@@ -138,6 +180,7 @@ let getPostByFollowing = (req, res) => {
     users_following.push(req.user._id);
     Post.find({author: { $in: users_following}})
     .populate({path: 'post', populate: { path: 'author', select: 'name img' }})
+    .populate({path: 'ref', populate: { path: 'author', select: 'name img' }})
     .populate({path: 'course', select:'title price img created_at ranking description instructor', populate: {path: 'instructor', select: 'name img' }})
     .populate('author', 'name img')
     .populate('likes', 'name img')
@@ -265,7 +308,8 @@ let sharePost = (req, res) => {
       share: true,
       post: postDB._id,
       is_course: postDB.is_course ? true : false,
-      course: postDB.is_course? postDB.course : undefined  
+      course: postDB.is_course? postDB.course : undefined,
+      ref: postDB.share ? postDB.ref : postDB._id
     });
 
     post.save( async (err, postDB) => {
@@ -285,6 +329,7 @@ let sharePost = (req, res) => {
         });
       }
       postDB.populate({path: 'post', populate: { path: 'author', select: 'name img' }})
+      .populate({path: 'ref', populate: { path: 'author', select: 'name img' }})
       .populate({path: 'course', select:'title price img created_at ranking description instructor', populate: {path: 'instructor', select: 'name img' }})
       .populate('author', 'name img')
       .execPopulate((err, post) => {
@@ -584,6 +629,7 @@ let getCommentsByPost = (req, res) => {
 
 module.exports = {
   savePost,
+  uploadMediaPost,
   getPostById,
   getPosts,
   getPostByFollowing,

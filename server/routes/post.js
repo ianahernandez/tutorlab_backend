@@ -16,6 +16,12 @@ const api = express.Router();
 // =====================
 api.post('/post', verifyToken , postController.savePost);
 
+
+// =====================
+// Crear nuevo Post
+// =====================
+api.put('/post-media/:id', verifyToken , postController.uploadMediaPost);
+
 // =====================
 // Obtener post por id
 // =====================

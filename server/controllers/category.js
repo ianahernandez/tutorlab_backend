@@ -12,18 +12,8 @@ const Category = require('../models/category');
 
 let getCategories = (req, res) => {
 
-  let from = req.query.from || 0;
-  from = Number(from);
-
-  let limit = req.query.limit || 5;
-  limit = Number(limit);
-
-
-  Category.find({ status: true })
-        .skip(from)
-        .limit(limit)
+  Category.find({})
         .exec( (err, categoriesDB) => {
-
           if(err){
             return res.status(400).json({
               ok: false,
@@ -31,7 +21,7 @@ let getCategories = (req, res) => {
             });
           }
 
-          Category.count({ status: true }, (err, count) =>{
+          Category.count({}, (err, count) =>{
             res.json({
               ok: true,
               categories: categoriesDB,
