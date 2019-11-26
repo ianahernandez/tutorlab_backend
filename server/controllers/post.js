@@ -239,7 +239,7 @@ let savePostCourse = (req, res) => {
     }
 
     let post = new Post({
-      title: body.title,
+      title: courseDB.title,
       author: author,
       is_course: true,
       course: courseDB._id  
